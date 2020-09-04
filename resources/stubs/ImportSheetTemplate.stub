@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Templates;
+
+use App\Templates\{{modelName}}ImportInputTemplate;
+use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+
+class {{modelName}}ImportSheetTemplate implements WithMultipleSheets
+{
+    use Exportable;
+
+    /**
+     * @return array
+     */
+    public function sheets(): array
+    {
+        $sheets  = [];
+        $foreign = [{{arrayForeign}}];
+
+        $sheets[] = new {{modelName}}ImportInputTemplate();
+
+        foreach ($foreign as $key => $value) {
+            $class    = "\\App\\Templates\\".$value;
+            $sheets[] = new $class();
+        }
+
+        return $sheets;
+    }
+}

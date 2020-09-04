@@ -1,0 +1,30 @@
+<?php
+
+namespace App\Imports;
+
+use {{modelNameSpace}};
+use Maatwebsite\Excel\Row;
+use Maatwebsite\Excel\Concerns\OnEachRow;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+
+class {{modelName}}ImportSheet implements OnEachRow, WithHeadingRow
+{
+    /**
+    * @param array $row
+    *
+    * @return \Illuminate\Database\Eloquent\Model|null
+    */
+
+    public function onRow(Row $row)
+    {
+        $rowIndex = $row->getIndex();
+        $row = $row->toArray();
+
+        {{relationFinder}}
+
+        $data = {{modelName}}::firstOrCreate([
+            {{arrayColumn}}
+        ]);
+
+    }
+}

@@ -1,0 +1,16 @@
+<?php
+
+namespace App\Imports;
+
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+
+class {{modelName}}Import implements WithMultipleSheets 
+{
+   
+    public function sheets(): array
+    {
+        return [
+            0 => new {{modelName}}ImportSheet(),
+        ];
+    }
+}

@@ -1,0 +1,35 @@
+<?php
+
+namespace App\Exports;
+
+use {{modelNameSpace}};
+use App\Components\Filters\{{modelName}}Filter;
+use Illuminate\Http\Request;
+use \PDF;
+
+class {{modelName}}ExportPdf
+{
+	public static function print($params = [], $fileName)
+	{
+		$filter = new {{modelName}}Filter(new Request($params));
+		$data   = {{modelName}}::{{defaultJoin}}{{defaultSelect}}filter($filter)->get();
+
+		dirExists($fileName);
+
+		$pdf    = PDF::loadView('components.pdf_template', [
+			'data'   => $data,
+			'header' => [
+				{{headerColumn}}
+			],
+			'columns' => [
+				{{columnName}}
+			],
+			'modelName' => "{{modelName}}"
+		]);
+
+        $pdf
+	        ->setOptions(["isPhpEnabled"=> true, 'isRemoteEnabled'=>true])
+	        ->setPaper('a4', '{{orientation}}')
+	        ->save(public_path($fileName));
+	}
+}

@@ -1,0 +1,156 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Components\Filters\{{modelName}}Filter;
+use App\Components\Helpers\FormBuilderHelper;
+use App\Components\Traits\ApiController;
+use App\Exports\{{modelName}}ExportPdf;
+use App\Exports\{{modelName}}ExportXls;
+use App\Imports\{{modelName}}Import;
+use App\Templates\{{modelName}}ImportSheetTemplate;
+use {{modelNameSpace}};
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
+
+class {{modelName}}Controller extends Controller
+{
+    use ApiController;
+
+    public $type, $label = "{{modelTitle}}";
+
+    public function index()
+    {
+        $data = [
+            'title' => $this->label,
+            'icon'  => 'fa fa-user-md',
+            'breadcrumb' => [
+                ['label' => $this->label],
+            ]
+        ];
+
+        $form_data = new FormBuilderHelper({{modelName}}::class,$data);
+        $final     = $form_data{{customHelper}}->get();
+        
+        return view('components.global_form', $final);
+    }
+
+    public function list({{modelName}}Filter $filter)
+    {
+        ${{modelNameSingularLowerCase}} = {{modelName}}::{{defaultJoin}}{{defaultSelect}}filter($filter)->get();
+        return $this->sendResponse(${{modelNameSingularLowerCase}}, 'Get Data Success!');
+    }
+
+    public function select2({{modelName}}Filter $filter)
+    {
+        return {{modelName}}::{{defaultJoin}}{{defaultSelect}}filter($filter)->get();
+    }
+
+    public function datatable({{modelName}}Filter $filter)
+    {
+        $data = {{modelName}}::{{defaultJoin}}{{defaultSelect}}filter($filter);
+
+        return \DataTables::of($data)
+            ->addColumn('action', function ($data){
+                return "<button onclick=\"editModal{{modelName}}('".route('{{modelRoute}}.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalForm{{modelName}}' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>
+                <button data-url=".route('{{modelRoute}}.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
+            })
+            ->make(true);
+    }
+
+    public function store(Request $request)
+    {
+        try{
+            ${{modelNameSingularLowerCase}} = DB::transaction(function () use ($request) {
+                ${{modelNameSingularLowerCase}} = new {{modelName}};
+                ${{modelNameSingularLowerCase}}->fillAndValidate()->save();
+                return ${{modelNameSingularLowerCase}};
+            });
+        }catch(\Exception $ex){
+            return $this->sendError('Insert Data Error!', $ex, 500);
+        }
+
+        return $this->sendResponse(${{modelNameSingularLowerCase}}, 'Insert Data Success!');
+    }
+
+    public function detail($id)
+    {
+        ${{modelNameSingularLowerCase}} = {{modelName}}::{{defaultJoin}}{{defaultSelect}}findOrFail($id);
+        return $this->sendResponse(${{modelNameSingularLowerCase}}, 'Get Data Success!');
+    }
+
+    public function update(Request $request, $id)
+    {
+        try{
+            ${{modelNameSingularLowerCase}} = DB::transaction(function () use ($request, $id) {
+                ${{modelNameSingularLowerCase}} = {{modelName}}::findOrFail($id);
+                ${{modelNameSingularLowerCase}}->fillAndValidate()->save();
+                return ${{modelNameSingularLowerCase}};
+            });
+        }catch(\Exception $ex){
+            return $this->sendError('Update Data Error!', $ex, 500);
+        }
+
+        return $this->sendResponse(${{modelNameSingularLowerCase}}, 'Update Data Success!');
+    }
+
+    public function destroy($id)
+    {
+        try{
+            DB::transaction(function () use ($id) {
+                ${{modelNameSingularLowerCase}} = {{modelName}}::findOrFail($id);
+                ${{modelNameSingularLowerCase}}->delete();
+            });
+        }catch(\Exception $ex){
+            return $this->sendError('Delete Data Error!', $ex, 500);
+        }
+
+        return $this->sendResponse([], 'Delete Data Success!');
+    }
+
+    public function exportXls(Request $request)
+    {
+        processing_jobs([
+            'title'   => 'Download '.$this->label,
+            'filters' => $request->all(),
+            'model'   => {{modelName}}ExportXls::class,
+            'module'  => $this->label,
+            'path'    => 'exports/{{modelRoute}}/xlsx',
+            'ext'     => 'xlsx',
+        ]);
+        
+        return $this->sendResponse([], 'Download '.$this->label.' has been processed.');
+
+    }
+
+    public function exportPdf(Request $request)
+    {
+        processing_jobs([
+            'title'   => 'Download '.$this->label,
+            'filters' => $request->all(),
+            'model'   => {{modelName}}ExportPdf::class,
+            'module'  => $this->label,
+            'path'    => 'exports/{{modelRoute}}/pdf',
+        ]);
+        
+        return $this->sendResponse([], 'Download '.$this->label.' has been processed.');
+    }
+
+    public function import(Request $request)
+    {
+        processing_jobs([
+            'title'  => 'Upload '.$this->label,
+            'model'  => {{modelName}}Import::class,
+            'module' => $this->label,
+            'path'   => 'imports/{{modelRoute}}',
+        ]);
+        
+        return $this->sendResponse([], 'Upload '.$this->label.' has been processed.');
+    }
+
+    public function importTemplate()
+    {
+        return Excel::download(new {{modelName}}ImportSheetTemplate, 'Template For Import '.$this->label.' Data.xlsx');
+    }
+}
