@@ -12,9 +12,10 @@ class ProductExportPdf
 	public static function print($params = [], $fileName)
 	{
 		$filter = new ProductFilter(new Request($params));
-		$data   = Product::join('categories', 'categories.id', 'products.category_id')
+		$data   = Product::join('units', 'units.id', 'products.unit_id')
+			->join('categories', 'categories.id', 'products.category_id')
 			->join('productions', 'productions.id', 'products.production_id')
-			->select('products.name', 'products.stock', 'products.buying_price', 'products.selling_price', 'categories.name as category_name', 'productions.name as production_name')
+			->select('products.name', 'products.stock', 'products.buying_price', 'products.selling_price', 'units.name as unit_name', 'categories.name as category_name', 'productions.name as production_name')
 			->filter($filter)->get();
 
 		dirExists($fileName);
@@ -26,11 +27,12 @@ class ProductExportPdf
 				['STOCK','number'],
 				['BUYING PRICE','number'],
 				['SELLING PRICE','number'],
+				['UNIT NAME','text'],
 				['CATEGORY NAME','text'],
 				['PRODUCTION NAME','text']
 			],
 			'columns' => [
-				'name', 'stock', 'buying_price', 'selling_price', 'category_name', 'production_name'
+				'name', 'stock', 'buying_price', 'selling_price', 'unit_name', 'category_name', 'production_name'
 			],
 			'modelName' => "Product"
 		]);

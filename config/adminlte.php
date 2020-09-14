@@ -14,7 +14,7 @@ return [
     |
     */
 
-    'title' => 'SIMATOKU',
+    'title' => 'SITAKU',
     'title_prefix' => '',
     'title_postfix' => '',
 
@@ -45,12 +45,12 @@ return [
     |
     */
 
-    'logo' => '<b>SIMATOKU</b>',
+    'logo' => '<b>SITAKU</b>',
     'logo_img' => 'assets/img/Apotek.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'SIMATOKU',
+    'logo_img_alt' => 'SITAKU',
 
     /*
     |--------------------------------------------------------------------------

@@ -26,15 +26,16 @@ class ProductExportXls implements FromCollection, WithHeadings, ShouldAutoSize, 
     public function collection()
     {
         $filter = new ProductFilter(new Request(self::$params));
-        return Product::join('categories', 'categories.id', 'products.category_id')
+        return Product::join('units', 'units.id', 'products.unit_id')
+			->join('categories', 'categories.id', 'products.category_id')
 			->join('productions', 'productions.id', 'products.production_id')
-			->select('products.name', 'products.stock', 'products.buying_price', 'products.selling_price', 'categories.name as category_name', 'productions.name as production_name')
+			->select('products.name', 'products.stock', 'products.buying_price', 'products.selling_price', 'units.name as unit_name', 'categories.name as category_name', 'productions.name as production_name')
 			->filter($filter)->get();
     }
 
     public function headings(): array
     {
-        return ['NAME', 'STOCK', 'BUYING PRICE', 'SELLING PRICE', 'CATEGORY ID', 'PRODUCTION ID'];
+        return ['NAME', 'STOCK', 'BUYING PRICE', 'SELLING PRICE', 'UNIT ID', 'CATEGORY ID', 'PRODUCTION ID'];
     }
 
     public function registerEvents(): array

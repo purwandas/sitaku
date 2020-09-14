@@ -14,7 +14,7 @@ class ProductImportInputTemplate implements WithHeadings, WithEvents, ShouldAuto
     */
     public function headings(): array
     {
-    	return ['NAME', 'STOCK', 'BUYING PRICE', 'SELLING PRICE', 'CATEGORY NAME', 'PRODUCTION NAME'];
+    	return ['NAME', 'STOCK', 'BUYING PRICE', 'SELLING PRICE', 'UNIT NAME', 'CATEGORY NAME', 'PRODUCTION NAME'];
     }
     
     public function registerEvents(): array

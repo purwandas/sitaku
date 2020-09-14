@@ -4,7 +4,7 @@ use App\User;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 
-class UsersTableSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -19,9 +19,9 @@ class UsersTableSeeder extends Seeder
         ]);
 
         User::updateOrCreate([
-            'email' => 'admin@gmail.com'
+            'email' => 'admin@sitaku.dev'
         ],[
-            'name' => 'Admin 1',
+            'name' => 'Master Admin',
             'password' => bcrypt('admin'),
             'role_id' => 1
         ]);

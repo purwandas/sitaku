@@ -1,13 +1,13 @@
 @php
 $useModal      = true;
 $custom        = $custom ?? [];
+$tmpCustom     = $custom;
 $filterId      = [];
 $name          = $name ?? @$model::toKey()['snake'];
 $mRoute        = $model::toKey()['route'];
 $exceptForeign = @$exceptForeign ?? [];
 $rules         = $model::rule();
 $except        = $exceptFilter ?? [];
-$custom        = $customFilter ?? [];
 $except        = is_array($except) ? $except : [];
 removeArrayByKey($rules, $except);
 removeArrayByKey($rules, array_keys($custom));
@@ -18,7 +18,7 @@ $rules = array_merge($rules, $custom);
 @if($useModal)
 <button type="button" data-toggle="modal" data-target="#filter-modal" class="btn btn-warning btn-sm act-btn display-hide">{!! getSvgIcon('fa-filter','mt-m-2') !!} Filter</button>
 
-<div class="modal fade" id="filter-modal" tabindex="-1" role="dialog" aria-hidden="true">
+<div class="modal fade" id="filter-modal" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -66,15 +66,20 @@ $rules = array_merge($rules, $custom);
 		@foreach($rules as $key => $value)
 			@php
 
-			$attributes = $custom[$key] ?? [];
+			$attributes = @$custom[$key] ?? [];
 			$onEditKey  = @$custom[$key]['onEdit'] ?? $key;
-			$modelRule  = explode('|', $value);
-			$type       = $custom[$key]['type'] ?? get_input_type($modelRule);
+			$modelRule  = !is_array($value) ? explode('|', $value) : [];
+			$type       = get_input_type($modelRule);
+			if (array_key_exists($key, $custom)) {
+				if (array_key_exists('type', $custom[$key])) {
+					$type = $custom[$key]['type'];
+				}
+			}
 
 			$custom[$key]['elOptions']['id'] = 'filter_'.$name.'_'. ( !empty(@$custom[$key]['elOptions']['id']) ? $custom[$key]['elOptions']['id'] : $key );
 
 			$foreign = isForeign($key, $exceptForeign);
-			if ($foreign['status'] && !empty($model)) {
+			if ($foreign['status'] && !empty($model) && !array_key_exists($key, $tmpCustom)) {
 				$type                                     = 'select2';
 				$field                                    = ucwords( str_replace('_', ' ', $foreign['column']) );
 				$custom[$key]['options']                  = str_replace('_', '-', $foreign['column'] ).'.select2';
@@ -94,8 +99,25 @@ $rules = array_merge($rules, $custom);
 				$custom[$key]['elOptions']['placeholder'] = "Select ".$field." here";
 
 			} elseif ($type == 'hidden') {
-				$type                                     = 'hidden';
+			} elseif ($type == 'text') {
 				$field                                    = ucwords( str_replace('_', ' ', $key) );
+				$custom[$key]['elOptions']['placeholder'] = "Select ".$field." here";
+			} elseif ($type == 'number') {
+				$field                                    = ucwords( str_replace('_', ' ', $key) );
+				$custom[$key]['elOptions']['placeholder'] = "Select ".$field." here";
+			} elseif ($type == 'select') {
+				$field                                    = ucwords( str_replace('_', ' ', $key) );
+				$custom[$key]['elOptions']['placeholder'] = "Select ".$field." here";
+				$attributes['options']                    = $custom[$key]['options'];
+			} elseif ($type == 'select2') {
+				$type                                     = 'select2';
+				$field                                    = ucwords( str_replace('_', ' ', $key) );
+				if ($foreign['status']) {
+					$related                 = getForeignClass($model, $foreign['column']);
+					$select2Text             = array_map(function($val) { return "obj.$val"; }, @$related::labelText() ?? ['name']);
+					$select2Text             = implode("+' - '+", $select2Text);
+					$attributes['text']      = $select2Text;
+				}
 			} else {
 				$type                                     = 'select2';
 				$field                                    = ucwords( str_replace('_', ' ', $key) );
@@ -106,7 +128,6 @@ $rules = array_merge($rules, $custom);
 				$attributes['text']                       = 'obj.'.$key;
 				$attributes['keyTerm']                    = '_'.$key;
 				$attributes['ajaxParams']                 = ['groupBy' => "'".$key."'"];
-
 			}
 
             $filterId[] = "'#".$custom[$key]['elOptions']['id']."'";
@@ -139,7 +160,7 @@ $rules = array_merge($rules, $custom);
 			@endphp
 				@isset($custom[$key]['options'])
 
-				{{ Form::$inputType($key,$custom[$key]['value'] ?? old($key) ,$custom[$key]['options'] ?? [],array_merge($attributes,[ 'pluginOptions' => ['multiple'=>true], 'containerClass'=>'col-md-3 mb-15', 'useLabel' => false])) }}
+				{{ Form::$inputType($key,$custom[$key]['value'] ?? old($key) ,$custom[$key]['options'] ?? [],array_merge($attributes,[ 'pluginOptions' => ['multiple'=>((!empty($custom[$key]['elOptions']['multiple'])) ? true : false)], 'containerClass'=>'col-md-3 mb-15', 'useLabel' => false])) }}
 
 				@else
 				
@@ -147,28 +168,6 @@ $rules = array_merge($rules, $custom);
 
 				@endisset
 	    @endforeach
-
-	    @php
-		$diff = array_diff_key($custom,$model::rule());
-		@endphp
-
-	    @foreach($diff as $key => $attributes)
-			
-			@php
-			$inputType = $attributes['type'].'Input';
-			@endphp
-				@isset($attributes['options'])
-
-				{{ Form::$inputType($key,$attributes['value'] ?? old($key) ,$attributes['options'] ?? [],array_merge($attributes,['containerClass'=>'col-md-3 mb-15'])) }}
-
-				@else
-				
-				{{ Form::$inputType($key,$attributes['value'] ?? old($key) ,array_merge($attributes,['containerClass'=>'col-md-3 mb-15'])) }}
-
-				@endisset
-	    @endforeach
-	    
-	    {{-- {{ @$slot }} --}}
 
 	    @if($useModal)
 			</div>
@@ -207,8 +206,8 @@ $rules = array_merge($rules, $custom);
 @push('additional-js')
 <script type="text/javascript">
 	var {{$name}}_filterId    = [{!! implode(', ',$filterId) !!}];
-	var {{$name}}_paramFilter = [{{$name}}_tableId, $('#'+{{$name}}_tableId), {{$name}}_tableUrl, {{$name}}_tableColumns, {{$name}}_tableColumnDefs, {{$name}}_tableOrder, '#exportIdXampleSoon'];
-	var {{$name}}_paramReset  = [{{$name}}_filterId, {{$name}}_tableId, $('#'+{{$name}}_tableId), {{$name}}_tableUrl, {{$name}}_tableColumns, {{$name}}_tableColumnDefs, {{$name}}_tableOrder, '#exportIdXampleSoon'];
+	var {{$name}}_paramFilter = [{{$name}}_tableId, $('#'+{{$name}}_tableId), {{$name}}_tableUrl, {{$name}}_tableColumns, {{$name}}_tableColumnDefs, {{$name}}_tableOrder, {{$name}}_tableLengthMenu, {{$name}}_tableFixedColumns, {{$name}}_useFilter];
+	var {{$name}}_paramReset  = [{{$name}}_filterId, {{$name}}_tableId, $('#'+{{$name}}_tableId), {{$name}}_tableUrl, {{$name}}_tableColumns, {{$name}}_tableColumnDefs, {{$name}}_tableOrder, {{$name}}_tableLengthMenu, {{$name}}_tableFixedColumns, {{$name}}_useFilter];
 
 	function adjustTableDisplay(timeout = '') {
 	    setTimeout(function(){
@@ -230,9 +229,12 @@ $rules = array_merge($rules, $custom);
 		var tableColumns = arrayOfData[3];
 		var columnDefs   = arrayOfData[4];
 		var order        = arrayOfData[5];
+		var lengthMenu   = arrayOfData[6];
+		var fixedColumn  = arrayOfData[7];
+		var useFilter    = arrayOfData[8];
 
 	    $(document).ready(function () {
-	        {{$name}}_setupTable(table, newElement, order, columnDefs, tableColumns, url, true);
+	        {{$name}}_setupTable(table, newElement, order, columnDefs, tableColumns, url, lengthMenu, fixedColumn, useFilter);
 	        adjustTableDisplay(timeout);
 	    });
 	}

@@ -47,12 +47,14 @@ $exceptForeign = @$exceptForeign ?? [];
 			}
 
 			$columns    = [];
+			$custom     = @$custom ?? [];
 			$button     = isset($button) ? $button : [];
 			$order      = isset($order) ? $order : [];
 			$newRoute   = $route ?? $cRoute;
 			$columnDefs = isset($columnDefs) ? $columnDefs : [];
-			$merged     = array_merge(@$useDatatableAction ? ['action'=>''] : [], $model::rule(), $arr);
+			$merged     = array_merge(@$useDatatableAction ? ['action'=>''] : [], $model::rule());
 			removeArrayByKey($merged, $except);
+			$merged     = array_merge($merged, $arr);
 	    	@endphp
 
 	    	@foreach($merged as $key => $value)
@@ -69,7 +71,11 @@ $exceptForeign = @$exceptForeign ?? [];
 						$columns[] = ['data' => $key];
 					}
 
-					$column    = ucwords( str_replace("_", " ", $column) );
+					if (array_key_exists($key, $custom)) {
+						$column    = $custom[$key];
+					} else {
+						$column    = ucwords( str_replace("_", " ", $column) );
+					}
 				@endphp
 				<th>{{$column}}</th>
 		    @endforeach
@@ -84,9 +90,14 @@ $exceptForeign = @$exceptForeign ?? [];
 
 <!-- Define Datatable Button -->
 <div id="{{$name}}_datatableButton" style="display: none;">
+	@if(@$setupDatatableBuilder['button-left'])
+	{!! @$setupDatatableBuilder['button-left'] !!}
+	@endif
 	@if(@$setupDatatableBuilder['useDatatableAction'])
 		@if(@$setupDatatableBuilder['creatable'])
-			@if($useModal)
+			@if($setupDatatableBuilder['formPage'])
+			<a href="{{route($newRoute. '.form')}}" class="btn btn-sm btn-primary">{!! getSvgIcon('fa-plus','mt-m-2') !!} Create</a>
+			@elseif($useModal)
 			<button class="btn btn-sm btn-primary" onclick="addModal{{$class}}()" data-toggle="modal" data-target="#modalForm{{$class}}">{!! getSvgIcon('fa-plus','mt-m-2') !!} Create</button>
 			@else
 			<a href="{{route($newRoute. '.create')}}" class="btn btn-sm btn-primary">{!! getSvgIcon('fa-plus','mt-m-2') !!} Create</a>
@@ -98,7 +109,7 @@ $exceptForeign = @$exceptForeign ?? [];
 			@include('components.fn_upload', ['name' => $name, 'form_url' => route($cRoute.'.import'), 'template_url' => route($cRoute.'.import-template')])
 		@endif
 		@if($useUtilities)
-			<button type="button" class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{!! getSvgIcon('fa-download','mt-m-2') !!} Export</button>
+			<button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{!! getSvgIcon('cil-cloud-download','mt-m-2') !!} Export</button>
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 				@if( in_array('export-xls', $button) || ($useUtilities && count($button) == 0) )
 					@include('components.fn_download', ['url' => $cRoute.'.export-xls', 'type' => 'xls', 'icon' => 'fas fa-file-excel'])
@@ -114,8 +125,10 @@ $exceptForeign = @$exceptForeign ?? [];
 				{!! getSvgIcon('fa-list','mt-m-2') !!} Queue Status
 			</button>
 		@endif
-		
 	</div>
+	@if(@$setupDatatableBuilder['button-right'])
+	{!! @$setupDatatableBuilder['button-right'] !!}
+	@endif
 </div>
 <!-- End Define-->
 
@@ -319,12 +332,16 @@ $exceptForeign = @$exceptForeign ?? [];
 	                });
 	            }
 	        }).then(function(result){
-	            if (result.value) {
+	        	if (result.value) {
 	                $.ajax({
 	                    url: deleteUrl,
 	                    type: 'DELETE',
 	                    success: function (data) {
-			                {{$name}}_reloadTable();
+	                    	if(data.status){                	
+			                	{{$name}}_reloadTable();
+			                }else{
+			                	swal("Gagal melakukan request", data.msg, "error");
+			                }
 	                    },
 	                    error: function(xhr, textStatus, errorThrown){
 	                        swal("Gagal melakukan request", "Silahkan hubungi admin", "error");
@@ -384,6 +401,10 @@ $exceptForeign = @$exceptForeign ?? [];
 		    });
 
 		    // new $.fn.dataTable.FixedColumns( {{$name}}_table );
+
+		    $('#{{$name}}_datatable').on('draw.dt', function () {
+                $('[data-tooltip="tooltip"]').tooltip();
+            });
 
 		    $('#{{$name}}_datatableButton').clone().appendTo('#{{$name}}_datatable_wrapper .col-md-6:eq(1)');
 			$('#{{$name}}_datatableButton').css('display','block').css('float','right');

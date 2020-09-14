@@ -24,7 +24,7 @@ class ProductController extends Controller
     {
         $data = [
             'title' => $this->label,
-            'icon'  => 'fas fa-file-medical ',
+            'icon'  => 'fa fa-user-md',
             'breadcrumb' => [
                 ['label' => $this->label],
             ]
@@ -38,26 +38,29 @@ class ProductController extends Controller
 
     public function list(ProductFilter $filter)
     {
-        $product = Product::join('categories', 'categories.id', 'products.category_id')
+        $product = Product::join('units', 'units.id', 'products.unit_id')
+			->join('categories', 'categories.id', 'products.category_id')
 			->join('productions', 'productions.id', 'products.production_id')
-			->select('products.*', 'categories.name as category_name', 'productions.name as production_name')
+			->select('products.*', 'units.name as unit_name', 'categories.name as category_name', 'productions.name as production_name')
 			->filter($filter)->get();
         return $this->sendResponse($product, 'Get Data Success!');
     }
 
     public function select2(ProductFilter $filter)
     {
-        return Product::join('categories', 'categories.id', 'products.category_id')
+        return Product::join('units', 'units.id', 'products.unit_id')
+			->join('categories', 'categories.id', 'products.category_id')
 			->join('productions', 'productions.id', 'products.production_id')
-			->select('products.*', 'categories.name as category_name', 'productions.name as production_name')
+			->select('products.*', 'units.name as unit_name', 'categories.name as category_name', 'productions.name as production_name')
 			->filter($filter)->get();
     }
 
     public function datatable(ProductFilter $filter)
     {
-        $data = Product::join('categories', 'categories.id', 'products.category_id')
+        $data = Product::join('units', 'units.id', 'products.unit_id')
+			->join('categories', 'categories.id', 'products.category_id')
 			->join('productions', 'productions.id', 'products.production_id')
-			->select('products.*', 'categories.name as category_name', 'productions.name as production_name')
+			->select('products.*', 'units.name as unit_name', 'categories.name as category_name', 'productions.name as production_name')
 			->filter($filter);
 
         return \DataTables::of($data)
@@ -85,9 +88,10 @@ class ProductController extends Controller
 
     public function detail($id)
     {
-        $product = Product::join('categories', 'categories.id', 'products.category_id')
+        $product = Product::join('units', 'units.id', 'products.unit_id')
+			->join('categories', 'categories.id', 'products.category_id')
 			->join('productions', 'productions.id', 'products.production_id')
-			->select('products.*', 'categories.name as category_name', 'productions.name as production_name')
+			->select('products.*', 'units.name as unit_name', 'categories.name as category_name', 'productions.name as production_name')
 			->findOrFail($id);
         return $this->sendResponse($product, 'Get Data Success!');
     }

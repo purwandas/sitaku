@@ -48,7 +48,7 @@ $config['inputContainerClass'] = ($config['inputContainerClass'] == 'col-md-10' 
     {{-- @endif --}}
 </div>
 
-@section('additional-css')
+@section('file-css')
 <link href="{{asset('assets/formbuilder/krajee/fileinput.min.css')}}" media="all" rel="stylesheet" type="text/css" />
 <!-- if using RTL (Right-To-Left) orientation, load the RTL CSS file after fileinput.css by uncommenting below -->
 <!-- link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/5.0.1/css/fileinput-rtl.min.css" media="all" rel="stylesheet" type="text/css" /-->
@@ -61,7 +61,7 @@ $config['inputContainerClass'] = ($config['inputContainerClass'] == 'col-md-10' 
 </style>
 @endsection
 
-@section('additional-js')
+@section('file-js')
 <script src="{{asset('assets/formbuilder/krajee/piexif.min.js')}}" type="text/javascript"></script>
 <!-- sortable.min.js is only needed if you wish to sort / rearrange files in initial preview. 
     This must be loaded before fileinput.min.js -->

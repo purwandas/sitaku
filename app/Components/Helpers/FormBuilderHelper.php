@@ -2,6 +2,8 @@
 
 namespace App\Components\Helpers;
 
+use App\Components\Helpers\DatatableBuilderHelper;
+
 class FormBuilderHelper
 {
 
@@ -41,6 +43,8 @@ class FormBuilderHelper
 		// SETUP ADDONS
 		$config['addonsConfig'] = $config['addons'];
 
+		$config['containerClass'] = $attributes['containerClass'] ?? 'row col-md-12 form-group';
+
 		// FOR ELEMENT PROPERTY
 		$config['elOptions']['id'] = $config['elOptions']['id'] ?? $name;
 		$config['elOptions']['placeholder'] = $config['elOptions']['placeholder'] ?? ($select ? 'Select ' : 'Please enter ') . $config['customLabel']. ' here';
@@ -74,6 +78,7 @@ class FormBuilderHelper
 			'setupFormBuilder'      => [],
 			'setupDatatableBuilder' => [
 	        	'useDatatableAction' => true,
+	        	'formPage' => false,
 	        	'creatable' => true,
 	        	'editable' => true,
 	        	'deletable' => true,
@@ -81,14 +86,32 @@ class FormBuilderHelper
 	        	'fixedColumns' => ['leftColumns' => '0', 'heightMatch' => 'none'],
 	        	'order' => [[1, 'DESC']],
 	        ],
-	        'customVariables'      => [],
+			'customVariables' => [],
+			'injectView'      => [],
 	    ],$this->config,$this->data) : $this->config;
+	}
+
+	public function setFormAlignmentVertical()
+	{
+		$config = $this->getGlobalConfig();
+		$config['formAlignment'] = 'vertical';
+		$this->config = $config;
+		return $this->getRecentArray();
 	}
 
 	public function setCustomVariables($array = [])
 	{
 		$config = $this->getGlobalConfig();
 		$config['customVariables'] = $array;
+		$this->config = $config;
+		return $this->getRecentArray();
+	}
+
+	public function injectView($array = [])
+	{
+	    // ->injectView(['inject/form_berkas_penilaian'=>['realisasi_id' => $realisasiId]])
+		$config = $this->getGlobalConfig();
+		$config['injectView'] = $array;
 		$this->config = $config;
 		return $this->getRecentArray();
 	}
@@ -182,6 +205,14 @@ class FormBuilderHelper
 		throw new \Exception("Datatable must be used");
 	}
 
+	public function setFormPage($v = false) //form by page, not modal
+	{
+		$config = $this->getGlobalConfig();
+		$config['setupDatatableBuilder']['formPage'] = $v;
+		$this->config = $config;
+		return $this->getRecentArray();
+	}
+
 	public function setCreatable($v = true) //create handler
 	{
 		$config = $this->getGlobalConfig();
@@ -270,6 +301,21 @@ class FormBuilderHelper
 		throw new \Exception("Datatable and Utilities must be used");
 	}
 
+	public function setAdditionalDatatableButtons($v = [], $position = 'left')
+	{
+		// availabel position : left & right
+		$config = $this->getGlobalConfig();
+		if($config['useDatatable'] && $config['useUtilities']){
+			if(is_array($v)){
+				$config['setupDatatableBuilder']['button-'.$position] = DatatableBuilderHelper::button($v);
+				$this->config = $config;
+				return $this->getRecentArray();
+			}
+			throw new \Exception("Datatable button must be an array");
+		}
+		throw new \Exception("Datatable and Utilities must be used");
+	}
+
 	public function setDatatableOrder($v = [])
 	{
 		$config = $this->getGlobalConfig();
@@ -334,6 +380,17 @@ class FormBuilderHelper
 		$config = $this->getGlobalConfig();
 		if($config['useDatatable']){
 			$config['setupDatatableBuilder']['additional'] = $v;
+			$this->config = $config;
+			return $this->getRecentArray();
+		}
+		throw new \Exception("Datatable must be used");
+	}
+
+	public function setCustomDatatableColumns($v = [])
+	{
+		$config = $this->getGlobalConfig();
+		if($config['useDatatable']){
+			$config['setupDatatableBuilder']['custom'] = $v;
 			$this->config = $config;
 			return $this->getRecentArray();
 		}

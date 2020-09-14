@@ -1,6 +1,7 @@
 @php
 if (!is_array($attributes)) $attributes = [];
 
+$attributes = array_merge($attributes, FormBuilderHelper::setupDefaultConfig($name, $attributes, true));
 
 $useLabel = true;
 if (isset($attributes['useLabel'])) {
@@ -10,16 +11,16 @@ if (isset($attributes['useLabel'])) {
 
 $labelText = isset($attributes['labelText']) ? $attributes['labelText'] : ucwords(implode(' ', explode('_', $name))) . (isset($attributes['required']) ? ' <span class="status-decline">*</span>' : '');
 
-$formAlignment = 'horizontal';
-if (isset($attributes['formAlignment'])) {
-	$formAlignment = $attributes['formAlignment'];
-	unset($attributes['formAlignment']);
-}
+// $formAlignment = 'horizontal';
+// if (isset($attributes['formAlignment'])) {
+// 	$formAlignment = $attributes['formAlignment'];
+// 	unset($attributes['formAlignment']);
+// }
 
 
-$labelContainerClass = $formAlignment === 'vertical' ? 'col-md-12' : 'col-md-2' .' col-form-label text-right';
-$inputContainerClass = $formAlignment === 'vertical' ? 'col-md-12' : 'col-md-10';
-if ($formAlignment === 'horizontal') {
+$labelContainerClass = $attributes['formAlignment'] === 'vertical' ? 'col-md-12' : 'col-md-2' .' col-form-label text-right';
+$inputContainerClass = $attributes['formAlignment'] === 'vertical' ? 'col-md-12' : 'col-md-10';
+if ($attributes['formAlignment'] === 'horizontal') {
 	if (isset($attributes['labelContainerClass'])) {
 		$labelContainerClass = $attributes['labelContainerClass'];
 		unset($attributes['labelContainerClass']);
@@ -30,18 +31,28 @@ if ($formAlignment === 'horizontal') {
 	}
 }
 
+if(isset($attributes['formAlignment']) && $attributes['formAlignment'] == 'vertical'){
+	$labelContainerClass = 'col-form-label text-right';
+}
+
 $id	= isset($attributes['elOptions']['id']) ? $attributes['elOptions']['id'] : preg_replace( array('/[^\w]/','/^\[/','/\]$/'), '', bcrypt($name) );
 
-$attributes = []; //handling error sementara
+// $attributes = []; //handling error sementara
 $configAttributes = array_merge([
 	'class' => 'form-control',
-], $attributes);
+], $attributes['elOptions']);
+
+
+
 @endphp
 
-<div class="{{ @$config['containerClass'] ?? 'form-group row' }} {{ !$errors->has($name) ?: 'has-error' }}">
+<div class="{{ @$attributes['containerClass'] ?? 'form-group row' }} {{ !$errors->has($name) ?: 'has-error' }}">
 	@if ($useLabel)
-        <label for="container{{$id}}" class="{{$labelContainerClass}}">{!! ucfirst($config['labelText'] ?? $name) !!}</label>
-		<div id="container{{$id}}" class="{{ $inputContainerClass }}">
+        <label for="container{{$id}}" class="{{$labelContainerClass}}">{!! ucfirst($attributes['labelText'] ?? $name) !!}</label>
+
+		@if(!isset($attributes['formAlignment']) || (isset($attributes['formAlignment']) && $attributes['formAlignment'] == 'horizontal'))
+        <div class="{{$config['inputContainerClass'] ?? 'col-md-10' }}">
+        @endif
 	@endif
 
 			{{ Form::select($name, $options, $value, $configAttributes) }}
@@ -51,6 +62,8 @@ $configAttributes = array_merge([
 			@endif
 
 	@if ($useLabel)
-		</div>
+		@if(!isset($attributes['formAlignment']) || (isset($attributes['formAlignment']) && $attributes['formAlignment'] == 'horizontal'))
+        	</div>
+        @endif
 	@endif
 </div>

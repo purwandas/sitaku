@@ -20,7 +20,8 @@ class ProductImportSheet implements OnEachRow, WithHeadingRow
         $rowIndex = $row->getIndex();
         $row = $row->toArray();
 
-        $category = \App\Category::where('name',$row['category_name'])->first();
+        $unit = \App\Unit::where('name',$row['unit_name'])->first();
+		$category = \App\Category::where('name',$row['category_name'])->first();
 		$production = \App\Production::where('name',$row['production_name'])->first();
 
         $data = Product::firstOrCreate([
@@ -28,6 +29,7 @@ class ProductImportSheet implements OnEachRow, WithHeadingRow
 			'stock' => $row['stock'],
 			'buying_price' => $row['buying_price'],
 			'selling_price' => $row['selling_price'],
+			'unit_id' => $unit->id,
 			'category_id' => $category->id,
 			'production_id' => $production->id
         ]);

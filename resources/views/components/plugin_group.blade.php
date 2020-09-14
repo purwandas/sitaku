@@ -1,4 +1,4 @@
-@yield('modal-area')
+@yield('modal-element')
 @stack('modal-element')
 
 @yield('summernote-css')
@@ -6,6 +6,7 @@
 @yield('datepicker-css')
 @yield('daterangepicker-css')
 @yield('switch-css')
+@yield('file-css')
 @yield('datatable-css')
 @yield('additional-css')
 @stack('additional-css')
@@ -16,6 +17,7 @@
 @yield('datepicker-js')
 @yield('daterangepicker-js')
 @yield('switch-js')
+@yield('file-js')
 @yield('datatable-js')
 @yield('additional-js')
 @stack('additional-js')
@@ -69,3 +71,6 @@
         }
     });
 </script>
+
+@yield('inject-view')
+@stack('inject-view')

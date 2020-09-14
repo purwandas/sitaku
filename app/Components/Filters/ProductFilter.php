@@ -50,6 +50,11 @@ class ProductFilter extends QueryFilters
 		return $this->builder->where('products.selling_price', 'like', '%'.$value.'%');
 	}
 
+	public function unit_id($value)
+	{
+		return is_array($value) ? $this->builder->whereIn('units.id', $value) : $this->builder->where('products.id', $value);
+	}
+
 	public function category_id($value)
 	{
 		return is_array($value) ? $this->builder->whereIn('categories.id', $value) : $this->builder->where('products.id', $value);

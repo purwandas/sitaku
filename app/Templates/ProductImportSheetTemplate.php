@@ -16,7 +16,7 @@ class ProductImportSheetTemplate implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets  = [];
-        $foreign = ['ProductImportDataCategoryTemplate','ProductImportDataProductionTemplate'];
+        $foreign = ['ProductImportDataUnitTemplate','ProductImportDataCategoryTemplate','ProductImportDataProductionTemplate'];
 
         $sheets[] = new ProductImportInputTemplate();
 

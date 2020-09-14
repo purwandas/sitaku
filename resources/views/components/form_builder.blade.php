@@ -1,6 +1,7 @@
 @php
 $useModal      = $useModal ?? false;
 $custom        = $custom ?? [];
+$tmpCustom 	   = $custom;
 $onEdit        = [];
 $onEdit2       = [];
 $onClear       = [];
@@ -8,10 +9,12 @@ $rules         = $model ? $model::rule() : [];
 $name          = $name ?? @$model::toKey()['snake'];
 $class         = $class ?? @$model::toKey()['class'];
 $exceptForeign = @$exceptForeign ?? [];
+$classRow      = ['class'=>'row'];
 @endphp
 
 @if($useModal)
-<div class="modal fade" id="modalForm{{$model::toKey()['class']}}" tabindex="-1" role="dialog" aria-hidden="true">
+<?php $classRow = []; ?>
+<div class="modal fade" id="modalForm{{$model::toKey()['class']}}" role="dialog" aria-hidden="true">
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -37,9 +40,9 @@ $exceptForeign = @$exceptForeign ?? [];
 <div class="col-lg-12">
 
 	@if(!isset($standalone) || !$standalone)
-	{!! Form::model($model, ['route' => !isset($model->id) ? [$model::toKey()['route'].".create"] : [ $model::toKey()['route'].".edit" ,['id' => $model->id] ] ,'files' => true, 'id' => 'form'.$model::toKey()['class'] ]) !!}
+	{!! Form::model($model, array_merge(['route' => !isset($model->id) ? [$model::toKey()['route'].".create"] : [ $model::toKey()['route'].".edit" ,['id' => $model->id] ] ,'files' => true, 'id' => 'form'.$model::toKey()['class']], $classRow)) !!}
 	@else
-	{!! Form::open(['route' => $route,'files' => true]) !!}
+	{!! Form::open(array_merge(['route' => $route,'files' => true], $classRow)) !!}
 	@endif
 
 	    @if($useModal)
@@ -57,8 +60,8 @@ $exceptForeign = @$exceptForeign ?? [];
 		
 		@foreach($rules as $key => $value)
 			@php
-
 			$attributes = $custom[$key] ?? [];
+			$attributes = array_merge(isset($formAlignment) ? ['formAlignment' => $formAlignment] : [], $attributes);
 			$onEditKey  = @$custom[$key]['onEdit'] ?? $key;
 			$modelRule  = !is_array($value) ? explode('|', $value) : [];
 			$type       = $custom[$key]['type'] ?? get_input_type($modelRule);
@@ -66,18 +69,39 @@ $exceptForeign = @$exceptForeign ?? [];
 			$custom[$key]['elOptions']['id'] = $model::toKey()['snake'].'_'. ( !empty(@$custom[$key]['elOptions']['id']) ? $custom[$key]['elOptions']['id'] : $key );
 
 			$foreign = isForeign($key, $exceptForeign);
-			if ($foreign['status']) {
+			if ($foreign['status'] && !array_key_exists($key, $tmpCustom)) {
 				$type  = 'select2';
 				$field = ucwords( str_replace('_', ' ', $foreign['column']) );
 				$custom[$key]['options'] = str_replace('_', '-', $foreign['column'] ).'.select2';
 				$custom[$key]['elOptions']['placeholder'] = "Enter ".$field." here";
 
-				$attributes['labelText'] = $field;
-				$attributes['keyTerm']   = $foreign['column'];
-				$related                 = getForeignClass($model, $foreign['column']);
-				$select2Text             = array_map(function($val) { return "obj.$val"; }, @$related::labelText() ?? ['name']);
-				$select2Text             = implode("+' - '+", $select2Text);
-				$attributes['text']      = $select2Text;
+				if (!array_key_exists('text', $attributes)) {
+					$related                 = getForeignClass($model, $foreign['column']);
+					$select2Text             = array_map(function($val) { return "obj.$val"; }, @$related::labelText() ?? ['name']);
+					$select2Text             = implode("+' | '+", $select2Text);
+					$attributes['text']      = $select2Text;
+				}
+				if (!array_key_exists('labelText', $attributes)) {
+					$attributes['labelText'] = $field;
+				}
+				if (!array_key_exists('keyTerm', $attributes)) {
+					$attributes['keyTerm']   = @$related::labelText()[0] ? '_'.$related::labelText()[0] : '_name';
+				}
+			} elseif ($type == 'select2') {
+				$foreign = isForeign($key);
+				if (!array_key_exists('text', $attributes) && $foreign['status']) {
+					$related                 = getForeignClass($model, $foreign['column']);
+					$select2Text             = array_map(function($val) { return "obj.$val"; }, @$related::labelText() ?? ['name']);
+					$select2Text             = implode("+' | '+", $select2Text);
+					$attributes['text']      = $select2Text;
+				}
+				if (!array_key_exists('keyTerm', $attributes) && $foreign['status']) {
+					$attributes['keyTerm']   = $foreign['column'];
+				}
+				if (!array_key_exists('labelText', $attributes)) {
+					$field = ucwords( str_replace('_', ' ', $foreign['column']) );
+					$attributes['labelText'] = $field;
+				}
 			}
 
 			$elOptions = collect(($custom[$key]['elOptions']) ?? []);
@@ -120,6 +144,7 @@ $exceptForeign = @$exceptForeign ?? [];
 						break;
 
 					case 'hidden':
+						$onEdit[]  = "$('#".$custom[$key]['elOptions']['id']."').val(data.".$key.");";
 						// No Action
 						break;
 
@@ -134,6 +159,12 @@ $exceptForeign = @$exceptForeign ?? [];
 			            $onClear[] = "initMap".$custom[$key]['elOptions']['id']."([]);";
 						break;
 
+					case 'multiplecolumn':
+						$custom[$key]['options'] = $custom[$key]['columns'];
+						// Next Update
+						// $onEdit2[] = "onEditInput('".$type."', '".$key."', '', ".$onEditKey.");";
+						// $onClear[] = "clearMultiple".$custom[$key]['elOptions']['id']."();";
+						break;
 					case 'multipleColumn':
 						// Next Update
 						break;
@@ -175,7 +206,7 @@ $exceptForeign = @$exceptForeign ?? [];
 						break;
 
 					case 'radio':
-						$onEdit2[] = "onEditInput('".$type."', '".$key."', '".$custom[$key]['elOptions']['id']."', ".$onEditKey.");";
+						$onEdit2[] = "onEditInput('".$type."', '".$key."', '".$custom[$key]['elOptions']['id']."', data.".$key.");";
 						$onClear[] = "$(\"input[name='".$key."[]']\").prop('checked', false);";
 						break;
 
@@ -224,7 +255,7 @@ $exceptForeign = @$exceptForeign ?? [];
 	    </div>
 	    @endif
 
-	    <div class="{{$useModal ? 'modal-footer' : 'row' }}">
+	    <div class="{{$useModal ? 'modal-footer' : 'col-md-12 row' }}">
 		    @if(!$useModal)
 			    @if(!isset($buttonAlign) || (isset($buttonAlign) && $buttonAlign == 'horizontal'))
 		            <div class="{{$custom[$key]['inputContainerClass'] ?? 'col-md-10' }} ml-auto">
@@ -232,8 +263,8 @@ $exceptForeign = @$exceptForeign ?? [];
         	@endif
 
         	<div class="btn-group">
-	            <button type="submit" class="btn btn-primary" id="submitBtn{{$model::toKey()['class']}}">Submit</button>
-	            <button type="button" class="btn btn-danger" {{$useModal ? 'data-dismiss=modal' : ''}}>Cancel</button>
+	            <button type="submit" class="btn btn-sm btn-primary" id="submitBtn{{$model::toKey()['class']}}" style="padding: 0.375rem 0.75rem !important;">Submit</button>
+	            <button type="button" class="btn btn-sm btn-danger" {{$useModal ? 'data-dismiss=modal' : 'onclick=backToIndex()'}} style="padding: 0.375rem 0.75rem !important;">Cancel</button>
             </div>
 
 		    @if(!$useModal)
@@ -256,8 +287,6 @@ $exceptForeign = @$exceptForeign ?? [];
 
 @push('additional-js')
 <script type="text/javascript">
-
-	
 
 	$('#form{{$class}}').submit(function(event) {
         event.preventDefault();
@@ -298,27 +327,33 @@ $exceptForeign = @$exceptForeign ?? [];
                     title: data.title,
                     text: data.msg,
                     type: data.type,
-                });
+                }).then(function(result){
+		            if (result.value) {
+		                @if(!$useModal)
+		                	window.location.href = '{{ route($model::toKey()['route'].'.index') }}';
+		                @else
+			                @if(empty($customVariables['id']) || !isset($customVariables['id']))
 
-                @if(empty($customVariables['id']) || !isset($customVariables['id']))
+				                try {
+					                {{$name}}_reloadTable();
+								}
+								catch(err) {
+								  // alert("no datatable");
+								  	try {
+						                loadData();
+									}
+									catch(err) {
+									  alert("no data loaded");
+									}
+								}
+					            $('#modalForm{{$class}}').modal('toggle');
+					            $('body').removeClass('modal-open');
+								$('.modal-backdrop').remove();
 
-	                try {
-		                {{$name}}_reloadTable();
-					}
-					catch(err) {
-					  // alert("no datatable");
-					  	try {
-			                loadData();
-						}
-						catch(err) {
-						  alert("no data loaded");
-						}
-					}
-		            $('#modalForm{{$class}}').modal('toggle');
-		            $('body').removeClass('modal-open');
-					$('.modal-backdrop').remove();
-
-				@endif
+							@endif
+		                @endif
+		            }
+		        });
             },
             error: function(xhr, textStatus, errorThrown){
                 swal({
@@ -333,23 +368,49 @@ $exceptForeign = @$exceptForeign ?? [];
 
     });
 
+    @if(!$useModal)
+    	function backToIndex() {
+	    	swal({
+	            title: 'Are you sure?',
+	            text: 'Your data will not be saved!',
+	            type: 'warning',
+	            showCancelButton: true,
+	            confirmButtonText: 'Yes',
+	            cancelButtonText: 'No',
+	            html: false,
+	            preConfirm: function() {
+	                return new Promise(function (resolve) {
+	                    setTimeout(function () {
+	                        resolve();
+	                    }, 50);
+	                });
+	            }
+	        }).then(function(result){
+	            if (result.value) {
+	                window.location.href = '{{ route($model::toKey()['route'].'.index') }}';
+	            }
+	        });
+	    }
+
+	    @if (!empty($customVariables['id']) && empty(@$dontEdit))
+    	$(document).ready(function() {
+	        editModal{{$model::toKey()['class']}}('{{ route($model::toKey()['route'].'.edit', ['id' => $customVariables['id']]) }}');
+		});
+		@endif
+    @endif
+
+    @if (empty(@$dontEdit))
 	function addModal{{$model::toKey()['class']}}() {
         $('#form{{$model::toKey()['class']}}').prop('action','{{ route($model::toKey()['route'].'.create') }}');
         clear{{$model::toKey()['class']}}Input();
         $('#_method').remove();
     }
 
-    @if(!$useModal && !empty($customVariables['id']))
-
-    	$(document).ready(function() {
-	        editModal{{$model::toKey()['class']}}('{{ route($model::toKey()['route'].'.edit', ['id' => $customVariables['id']]) }}');
-		 });
-    	
-
-    @endif
-
     function editModal{{$model::toKey()['class']}}(url) {
+        @if (empty($customVariables['id']))
         clear{{$model::toKey()['class']}}Input();
+        @endif
+
         $('#form{{$model::toKey()['class']}}').prop('action',url);
         $('#form{{$model::toKey()['class']}}').append('<input type="hidden" name="_method" value="PUT" id="_method">');
 
@@ -358,7 +419,6 @@ $exceptForeign = @$exceptForeign ?? [];
             type  : 'GET',
             success: function (json) {
             	data = json.data;
-            	console.log(json);
                 if (!data.id) {
                     console.log('there was something error');
                     swal({
@@ -372,6 +432,12 @@ $exceptForeign = @$exceptForeign ?? [];
 		        setTimeout(function() {
 			        {!!@$onEdit2!!}
 		        }, 500);
+		        if (typeof dataEdit !== "undefined") {
+		        	dataEdit = data;
+		        }
+		        if (typeof setupInjector === "function") {
+		        	setupInjector();
+		        }
 		    },
             error: function(xhr, textStatus, errorThrown){
                 swal({
@@ -386,6 +452,7 @@ $exceptForeign = @$exceptForeign ?? [];
     function clear{{$model::toKey()['class']}}Input() {
         {!!@$onClear!!}
     }
+    @endif
 
 </script>
 @endpush
@@ -426,6 +493,7 @@ $exceptForeign = @$exceptForeign ?? [];
 	}
 	@endif
 
+    @if (empty(@$dontEdit))
 	function onEditInput(type, name, elementId, value, multiple = false) {
         var countingCheck = 0;
 
@@ -433,7 +501,9 @@ $exceptForeign = @$exceptForeign ?? [];
             if (multiple == true) {
                 $.each(value, function(key, val){
                     countingCheck++;
-                    setSelect2IfPatch($("#"+elementId), val['id'], val['name']);
+                    if (val) {
+                    	setSelect2IfPatch($("#"+elementId), val[key]['id'], val[key]['name']);
+                    }
                 });
             }else{
                 setSelect2IfPatch($("#"+elementId), value[0], value[1]);
@@ -460,7 +530,7 @@ $exceptForeign = @$exceptForeign ?? [];
                $("input[name='" + name + "[]'][value='" + val + "']").prop('checked', true);
             });
         } else if (type == 'radio') {
-            $("input[name='" + name + "[]'][value='" + value + "']").prop('checked', true);
+            $("input[name='" + name + "'][value='" + value + "']").prop('checked', true);
         } else if (type == 'select-multi') {
             var varName = "select2val_"+ elementId;
             window[varName] = [];
@@ -480,6 +550,7 @@ $exceptForeign = @$exceptForeign ?? [];
         }
 
     }
+	@endif
 </script>
 @endsection
 

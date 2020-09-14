@@ -850,10 +850,7 @@ if(!function_exists('getSvgIcon')){
 }
 if(!function_exists('getFaIcon')){
 	function getFaIcon($icon, $addClass = '') {
-		return 
-		"
-			<i class='fas $icon'></i>
-		";
+		return "<i class='fas $icon'></i>";
 	}
 }
 

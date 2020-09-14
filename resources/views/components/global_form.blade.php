@@ -36,3 +36,17 @@
 	</div>
 </div>
 @endsection
+
+@push('inject-view')
+@if(isset($injectView))
+	@if(is_array($injectView))
+		@if(count($injectView) > 0)
+			@foreach($injectView as $view)
+				@include($view)
+			@endforeach
+		@endif
+	@else
+		@include($injectView)
+	@endif
+@endif
+@endpush

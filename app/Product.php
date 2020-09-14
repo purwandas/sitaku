@@ -15,15 +15,26 @@ class Product extends BaseModel
         	// Define rule here to display data on datatable and generate form builder
             // Example : 'name' => 'required|string|min:8|max:10',
             'name' => 'string|required',
-			'stock' => 'numeric',
+			'stock' => 'regex:/^\d+(\.\d{1,2})?$/',
 			'buying_price' => 'numeric',
 			'selling_price' => 'numeric|nullable',
+			'unit_id' => 'exists:units,id|nullable',
 			'category_id' => 'exists:categories,id',
 			'production_id' => 'exists:productions,id',
 
         ];
     
     }
+
+    public function unit()
+	{
+		return $this->belongsTo($this->_unit(), 'unit_id');
+	}
+
+	public static function _unit()
+	{
+		return '\\App\Unit';
+	}
 
     public function category()
 	{

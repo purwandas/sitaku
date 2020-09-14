@@ -1,13 +1,12 @@
 @php
 if (!is_array($attributes)) $attributes = [];
 $attributes['orientation'] = $attributes['orientation'] ?? 'horizontal'; 
-$config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attributes);
+$config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 // $id     = isset($config['elOptions']['id']) ? $config['elOptions']['id'] : preg_replace( array('/[^\w]/','/^\[/','/\]$/'), '', bcrypt($name) );
 @endphp
 
-<div class="{{ @$config['containerClass'] ?? 'form-group' }} {{ !$errors->has($name) ?: 'has-error' }}">
+<div class="{{ @$config['containerClass'] ?? 'row form-group' }} {{ !$errors->has($name) ?: 'has-error' }}">
 	@if ($config['useLabel'])
-	<div class="row">
 		<div class="{{ $config['labelContainerClass'] }}">
 			<label class="col-form-label">
 				{!! $config['labelText'] !!}
@@ -18,6 +17,9 @@ $config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attribute
 			<div class="col-md-12 {{ strtolower($config['orientation']) == 'horizontal' ? 'row' : '' }}">
 			@if (strtolower($config['orientation']) == 'horizontal')
 				@foreach ($options as $key => $option)
+				@if (@$config['col'])
+				<div class="col">
+				@endif
 				<div class="custom-control custom-radio m-radio-inline r-15">
 					@php 
 					$id = str_replace(' ', '', $option)
@@ -25,6 +27,9 @@ $config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attribute
 					{{ Form::radio($name, $key, $key == $value, ['class'=>'custom-control-input', 'id'=>$id]) }}
 	              	<label class="custom-control-label" for="{{$id}}">{{ ucwords($option) }}</label>
 	            </div>
+	            @if (@$config['col'])
+				</div>
+				@endif
 				@endforeach
 
 			@elseif (strtolower($config['orientation']) == 'vertical')
@@ -48,6 +53,5 @@ $config = App\Components\FormBuilderHelper::setupDefaultConfig($name, $attribute
 
 	@if ($config['useLabel'])
 		</div>
-	</div>
 	@endif
 </div>

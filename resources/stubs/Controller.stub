@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Components\Filters\{{modelName}}Filter;
+use App\Components\Helpers\DatatableBuilderHelper;
 use App\Components\Helpers\FormBuilderHelper;
 use App\Components\Traits\ApiController;
 use App\Exports\{{modelName}}ExportPdf;
@@ -53,8 +54,21 @@ class {{modelName}}Controller extends Controller
 
         return \DataTables::of($data)
             ->addColumn('action', function ($data){
-                return "<button onclick=\"editModal{{modelName}}('".route('{{modelRoute}}.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalForm{{modelName}}' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>
-                <button data-url=".route('{{modelRoute}}.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
+                $buttons = [];
+
+                $buttons = array_merge($buttons, [
+                                'edit' => [
+                                    'onclick' => "editModal{{modelName}}('".route('{{modelRoute}}.edit',['id'=>$data->id])."')",
+                                    'data-target' => '#modalForm{{modelName}}',
+                                    'icon' => getSvgIcon('cil-pencil','mt-m-2'),
+                                ],
+                                'delete' => [
+                                    'data-url' => route('{{modelRoute}}.delete',['id'=>$data->id]),
+                                    'icon' => getSvgIcon('cil-trash','mt-m-2'),
+                                ],
+                            ]);
+
+                return DatatableBuilderHelper::button($buttons);
             })
             ->make(true);
     }

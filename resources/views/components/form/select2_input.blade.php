@@ -7,6 +7,7 @@ $method = $isDataRequestByAjax ? ( isset($attributes['elOptions']['route']) ? $a
 
 // SET DEFAULT CLASS
 $attributes['elOptions']['class'] = 'select2 form-control';
+$attributes['elOptions']['style'] = 'width:100%';
 
 // SET DEFAULT ID
 $attributes['elOptions']['id'] = $attributes['elOptions']['id'] ?? 'select2-' . $name;
@@ -20,6 +21,19 @@ $attributes['key']  = $attributes['key'] ?? 'obj.id';
 $config = FormBuilderHelper::setupDefaultConfig($name, $attributes, true);
 $config['pluginOptions'] = $attributes['pluginOptions'] ?? [];
 $config['ajaxParams']    = $attributes['ajaxParams'] ?? [];
+
+$labelContainerClass = ($config['labelContainerClass'] ?? 'col-md-2').' col-form-label text-right';
+
+if((isset($config['formAlignment']) && $config['formAlignment'] == 'vertical')){
+	$labelContainerClass = 'col-form-label text-right';
+}
+
+$elOptions = '';
+if(isset($config['elOptions'])){
+	foreach($config['elOptions'] as $attr => $attr_value){
+		$elOptions .= $attr . "='" . trim($attr_value) . "' ";
+	}
+}
 
 // FORMATTING TEXT BY TEMPLATE 
 // if (is_array($config['text'])) {
@@ -36,12 +50,10 @@ $config['ajaxParams']    = $attributes['ajaxParams'] ?? [];
 <div class='{{ @$config['containerClass'] ?? 'form-group row' }}'>
 	@if ($config['useLabel'])
 	{{-- <div class='row'> --}}
-		<div class='{{ $config['labelContainerClass'] }}'>
-			<label class='{{ @$config['labelClass'] }}'>
-				{!! $config['labelText'] !!}
-			</label>
-		</div>
-		<div class='{{ $config['inputContainerClass'] }}'>
+		<label for="{!! @$elOptions['id'] ?? $name !!}" class="{{$labelContainerClass}}">{!! ucfirst($config['labelText'] ?? $name) !!}</label>
+        @if(!isset($config['formAlignment']) || (isset($config['formAlignment']) && $config['formAlignment'] == 'horizontal'))
+        <div class="{{$config['inputContainerClass'] ?? 'col-md-10' }}">
+        @endif
 	@endif
 			<select {{ isset($config['pluginOptions']['multiple']) && $config['pluginOptions']['multiple'] ? "name=".$name ."[] multiple" : "name=".$name."" }} <?= $config['htmlOptions'] ?>>
 				@if (!$isDataRequestByAjax)
@@ -59,9 +71,10 @@ $config['ajaxParams']    = $attributes['ajaxParams'] ?? [];
 			@endif
 
 	@if ($config['useLabel'])
-		</div>
-	{{-- </div> --}}
-	@endif
+        @if(!isset($config['formAlignment']) || (isset($config['formAlignment']) && $config['formAlignment'] == 'horizontal'))
+        </div>
+        @endif
+    @endif
 </div>
 
 @section('select2-plugin-js')
@@ -95,6 +108,35 @@ $config['ajaxParams']    = $attributes['ajaxParams'] ?? [];
     		margin-right: 0px;
     		width: 13px;
     	}
+    	.select2-container .select2-selection--single {
+			height: 34px !important;
+			padding-top: 0.115rem !important;
+			padding-bottom: 0.115rem !important;
+			padding-left: 4px !important;
+		}
+
+		.select2-selection--single:focus {
+		    border-color: #8ad4ee;
+		    outline: 0;
+		    box-shadow: 0 0 0 0.2rem rgba(50, 31, 219, 0.25);
+		}
+		.select2-container--default.select2-container--focus .select2-selection--multiple {
+		    border-color: #8ad4ee !important;
+		    outline: 0 !important;
+		    box-shadow: 0 0 0 0.2rem rgba(50, 31, 219, 0.25) !important;
+		}
+		.select2-container--default .select2-selection--single .select2-selection__placeholder {
+			color : #8b949b !important;
+		}
+		select {
+			cursor: pointer;
+		}
+		.select2-selection__rendered {
+			padding-top: 2px;
+		}
+		.select2-dropdown {
+			z-index: 100010;
+		}
     </style>
 @endsection
 
@@ -105,10 +147,6 @@ $config['ajaxParams']    = $attributes['ajaxParams'] ?? [];
 	    	allowClear: true,//
 		}, {!! json_encode($config['pluginOptions']) !!}),
 		select2val_{{$name}} = {!! !is_array($value) ? json_encode([$value]) : json_encode($value) !!};
-
-	$('.select2').on('select2:open',function(){
-	    $('.select2-dropdown').css("z-index", 100000);
-	});
 
 	$(document).ready(function() {
 		// IF THE SELECT2 IS REQUEST DATA BY AJAX
@@ -122,7 +160,7 @@ $config['ajaxParams']    = $attributes['ajaxParams'] ?? [];
 					page: params.page
 				}
 				@foreach ($config['ajaxParams'] as $key => $val)
-				data.{{$key}} = {!! $val !!};
+				data.{{$key}} = {!! is_array($val) ? json_encode($val) : $val !!};
 				@endforeach
 				return data;
 			},

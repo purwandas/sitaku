@@ -2,14 +2,14 @@
 if (!is_array($attributes)) $attributes = [];
 $config = FormBuilderHelper::setupDefaultConfig($name, $attributes);
 $id     = isset($config['elOptions']['id']) ? $config['elOptions']['id'] : preg_replace( array('/[^\w]/','/^\[/','/\]$/'), '', bcrypt($name) );
-$config['format']   = $config['format'] ?? 'yyyy-mm-dd';
-$config['view']     = $config['view'] ?? 0;
-$config['min_view'] = $config['min_view'] ?? 0;
+$config['format']      = $config['format'] ?? 'yyyy-mm-dd';
+$config['view']        = $config['view'] ?? 0;
+$config['min_view']    = $config['min_view'] ?? 0;
+$config['orientation'] = $config['orientation'] ?? "bottom";
 @endphp
 
-<div class="{{ @$config['containerClass'] ?? 'form-group' }} {{ $config['useLabel'] ? '' : 'width-100' }} {{ !$errors->has($name) ?: 'has-error' }}">
+<div class="{{ @$config['containerClass'] ?? 'row form-group' }} {{ $config['useLabel'] ? '' : 'width-100' }} {{ !$errors->has($name) ?: 'has-error' }}">
 	@if ($config['useLabel'])
-	<div class="row">
 		<div class="{{ $config['labelContainerClass'] }}">
 			<label class="col-form-label">
 				{!! $config['labelText'] !!}
@@ -49,7 +49,6 @@ $config['min_view'] = $config['min_view'] ?? 0;
 
 	@if ($config['useLabel'])
 		</div>
-	</div>
 	@endif
 </div>
 
@@ -69,6 +68,7 @@ $config['min_view'] = $config['min_view'] ?? 0;
 		minViewMode: "{{$config['min_view']}}",
 		autoclose: true,
 		todayHighlight: true,
+       	orientation: "{{$config['orientation']}}"
 	});
 </script>
 @endpush

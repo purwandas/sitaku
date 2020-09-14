@@ -44,12 +44,28 @@ Route::group(['prefix' => 'production','middleware' => ['auth']], function() {
 	Route::get('import-template', 'ProductionController@importTemplate')->name('production.import-template');
 });
 
+Route::group(['prefix' => 'supplier','middleware' => ['auth']], function() {
+	Route::get('', 'SupplierController@index')->name('supplier.index');
+	Route::get('import-template', 'SupplierController@importTemplate')->name('supplier.import-template');
+});
+
+Route::group(['prefix' => 'unit','middleware' => ['auth']], function() {
+	Route::get('', 'UnitController@index')->name('unit.index');
+	Route::get('import-template', 'UnitController@importTemplate')->name('unit.import-template');
+});
+
 Route::group(['prefix' => 'product','middleware' => ['auth']], function() {
 	Route::get('', 'ProductController@index')->name('product.index');
 	Route::get('import-template', 'ProductController@importTemplate')->name('product.import-template');
 });
 
-Route::group(['prefix' => 'supplier','middleware' => ['auth']], function() {
-	Route::get('', 'SupplierController@index')->name('supplier.index');
-	Route::get('import-template', 'SupplierController@importTemplate')->name('supplier.import-template');
+Route::group(['prefix' => 'product-unit','middleware' => ['auth']], function() {
+	Route::get('', 'ProductUnitController@index')->name('product-unit.index');
+	Route::get('import-template', 'ProductUnitController@importTemplate')->name('product-unit.import-template');
+});
+
+Route::group(['prefix' => 'sales','middleware' => ['auth']], function() {
+	Route::get('', 'SalesController@index')->name('sales.index');
+	Route::get('form/{id?}', 'SalesController@form')->name('sales.form');
+	Route::get('import-template', 'SalesController@importTemplate')->name('sales.import-template');
 });
