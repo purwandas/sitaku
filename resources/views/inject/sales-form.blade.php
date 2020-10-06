@@ -14,7 +14,7 @@ $multipleTable = 'tbl_multiple_multiplecolumn2';
 					<label for="totalPayment">Total Payment</label>
 					<input id="totalPayment" type="text" class="form-control money text-right" onchange="setChange()" readonly>
 					<label for="totalPaid">Total Paid</label>
-					<input id="totalPaid" type="text" class="form-control money text-right" onchange="setChange()">
+					<input id="totalPaid" type="text" class="form-control money text-right" onchange="setChange()" onkeypress="setChange()">
 				</div>
 			</div>
 			<div class="card-footer">
@@ -46,15 +46,6 @@ $multipleTable = 'tbl_multiple_multiplecolumn2';
 
 		subTotal.autoNumeric('set',_subTotal);
 		$('#totalPayment').autoNumeric('set', getTotal() );
-	});
-
-	$('#totalPaid').on('change', function(e) {
-		alert('a');
-		setChange()
-	});
-
-	$('#totalPayment').on('change', function(e) {
-		$('#totalChange').autoNumeric('set', getChange() );
 	});
 
 	$(document).ready(function() {
@@ -94,6 +85,7 @@ $multipleTable = 'tbl_multiple_multiplecolumn2';
 
 	function setChange() {
 		var change = $('#totalPaid').autoNumeric('get') - $('#totalPayment').autoNumeric('get');
+		if (change > 0)
 		$('#totalChange').autoNumeric('set', change  );
 	}
 </script>
