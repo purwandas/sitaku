@@ -9,7 +9,7 @@
 
 	$typeUsed = [];
 @endphp
-<div id="{{$name}}_container" class="{{ @$config['containerClass'] ?? 'form-group row' }}" style="margin-bottom: 0px; overflow-x: auto;">
+<div id="{{$name}}_container" class="{{ @$config['containerClass'] ?? 'form-group row' }}" style="overflow-x: auto;">
 	@if(!isset($attributes['useLabel']) || (isset($attributes['useLabel']) && $attributes['useLabel'] == true))
 		<label for="{!! @$elOptions['id'] ?? $name !!}" class="{{$labelContainerClass}}">{!! ucfirst($config['labelText'] ?? $name) !!}</label>
 		<div class="col-sm-10" style="overflow-x: auto;">

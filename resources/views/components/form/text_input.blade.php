@@ -52,17 +52,25 @@ if(isset($config['elOptions'])){
     @endif
 </div>
 
-@if(@$config['autoNumeric'])
+@if(@$config['autoNumeric'] || is_array(@$config['autoNumeric']))
 @section('auto-numeric-plugin-js')
 <script src="{{asset('assets/formbuilder/auto-numeric/autoNumeric.js')}}"></script>
 <script type="text/javascript">
     @if( is_array($config['autoNumeric']) )
-        $('#{{$config['elOptions']['id']}}1').autoNumeric('init',{!! $config['autoNumeric'] !!});
+        $('#{{$config['elOptions']['id']}}1').autoNumeric('init',{!! json_encode($config['autoNumeric'], JSON_FORCE_OBJECT) !!});
     @else
-        $('#{{$config['elOptions']['id']}}1').autoNumeric('init');
+        $('#{{$config['elOptions']['id']}}1').autoNumeric();
     @endif
+
+    @if ($value)
+    $('#{{$config['elOptions']['id']}}1').autoNumeric('set', {{$value}});
+    @endif
+
     $("#{{$config['elOptions']['id']}}1").change(function(){
         $("#{{$config['elOptions']['id']}}").val($(this).autoNumeric('get'));
+    });
+    $("#{{$config['elOptions']['id']}}").change(function(){
+        $("#{{$config['elOptions']['id']}}1").autoNumeric('set',$(this).val());
     });
 </script>
 @endsection

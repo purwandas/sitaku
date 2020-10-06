@@ -17,6 +17,13 @@ if(!function_exists('rand_color')){
     }
 }
 
+if(!function_exists('currency')){
+    function currency($number, $type = 'IDR')
+    {
+        return $type.' '.number_format($number);
+    }
+}
+
 if(!function_exists('get_auth')){
     function get_auth()
     {
@@ -915,6 +922,8 @@ if(!function_exists('getConfigMenu')){
 		if ($type == 'separator') {
 		    $configSeparator = [];
 		    $configSeparator['role'] = "MASTER DATA";
+		    $configSeparator['sales'] = "REPORT";
+		    $configSeparator['sales-form'] = "TRANSACTION";
 		    return $configSeparator;
 		}
 
@@ -927,6 +936,7 @@ if(!function_exists('getConfigMenu')){
 		if ($type == 'text') {
 		    $configLabel = [];
 		    $configLabel['role'] = "Permission";
+		    $configLabel['sales-form'] = "Sales";
 		    return $configLabel;
 		}
     }

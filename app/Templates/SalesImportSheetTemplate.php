@@ -16,7 +16,7 @@ class SalesImportSheetTemplate implements WithMultipleSheets
     public function sheets(): array
     {
         $sheets  = [];
-        $foreign = ['SalesImportDataSupplierTemplate'];
+        $foreign = ['SalesImportDataUserTemplate'];
 
         $sheets[] = new SalesImportInputTemplate();
 

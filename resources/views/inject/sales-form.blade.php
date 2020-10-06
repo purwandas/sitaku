@@ -1,34 +1,73 @@
+@php
+$multipleTable = 'tbl_multiple_multiplecolumn2';
+@endphp
+
+@push('inject-view')
+<div id="detailTemplate">
+	<div class="col-sm-4 offset-sm-2" style="margin-top: 10px;">
+	    <div class="card card-outline card-secondary">
+			<div class="card-header">
+				<h3 class="card-title">Info Card Example</h3>
+			</div>
+			<div class="card-body">
+				<div class="form-group row">
+					<label for="totalPayment">Total Payment</label>
+					<input id="totalPayment" type="text" class="form-control money text-right" onchange="setChange()" readonly>
+					<label for="totalPaid">Total Paid</label>
+					<input id="totalPaid" type="text" class="form-control money text-right" onchange="setChange()">
+				</div>
+			</div>
+			<div class="card-footer">
+				<label for="totalPaid">Total Change</label>
+				<input id="totalChange" type="text" class="form-control money text-right" readonly>
+			</div>
+	    </div>
+	</div>
+	<!-- /.card -->
+</div>
+@endpush
+
+@include('inject/table-total')
+
+@push('additional-js')
 <script src="{{asset('assets/formbuilder/auto-numeric/autoNumeric.js')}}"></script>
 <script type="text/javascript">
-	var tableHeaderElement = $('#tbl_multiple_multiplecolumn thead tr th'),
-		tableHeaderLength = tableHeaderElement.length;
-	tableHeaderElement.each(function(key, value){
-        var that = $(this);
-		if (key % 3 == 2 && key > 1 && key < (tableHeaderLength - 1)) {
-			that.attr('colspan',3).addClass('text-center');
-		} else {
-			if (key > 1 && key < (tableHeaderLength -1)) {
-				that.remove();
-			} else {
-				that.attr('rowspan',2).addClass('align-middle text-center');
-			}
-		}
-    });
 
-	var tableHeaderElement = $('#tbl_multiple_multiplecolumn thead'),
-		appendHeaderElement = '',
-		defaultHeaderElement = tableHeaderElement.html(),
-		loopCount = ((tableHeaderLength -3) / 3);
+	var detailTemplate = '';
 
-	for (var i = loopCount; i > 0; i--) {
-		appendHeaderElement += '<th>Qty</th><th>Price</th><th>Total</th>';
-	}
+	$('body #{{$multipleTable}}').on('change', '.calc', function(e) {
+		var parent = $(this).closest('tr'),
+			price = parent.find('.price'),
+			qty = parent.find('.qty'),
+			subTotal = parent.find('.sub-total'),
+			_subTotal = 0;
 
-	appendHeaderElement = "<tr>"+ appendHeaderElement +"</tr>";
-	tableHeaderElement.html(defaultHeaderElement + appendHeaderElement);
+		_subTotal = price.autoNumeric('get') * qty.autoNumeric('get');
+
+		subTotal.autoNumeric('set',_subTotal);
+		$('#totalPayment').autoNumeric('set', getTotal() );
+	});
+
+	$('#totalPaid').on('change', function(e) {
+		alert('a');
+		setChange()
+	});
+
+	$('#totalPayment').on('change', function(e) {
+		$('#totalChange').autoNumeric('set', getChange() );
+	});
 
 	$(document).ready(function() {
-		initNumeric();
+		setTimeout(function() {
+			$('#menuToggle').click()
+			initNumeric();
+		}, 10);
+
+
+		detailTemplate = $('#detailTemplate').html();
+		$('#detailTemplate').html('');
+
+	    $('#{{$multipleTable}}').parent().parent().append(detailTemplate);
 	});
 
 	(function($) {
@@ -39,15 +78,23 @@
         };
     })(jQuery);
 
-    $('#tbl_multiple_multiplecolumn tbody').bind("append", function() { 
+    $('#{{$multipleTable}} tbody').bind("append", function() { 
 		initNumeric();
-     });
+    });
 
 	function initNumeric() {
-		$('.money').autoNumeric('init');
+		$('.money').autoNumeric('init',{mDec:7,aPad:0});
 		$('.money').css('min-width','130px');
 	}
 
-	// $('#multiplecolumn_unit_total_1_2').autoNumeric('set',10000);
+	function getTotal() {
+		var ek = $('.sub-total').map((_,el) => el.value.split(',').join('')).get();
+		return ek.reduce((a, b) => Number(a) + Number(b), 0);
+	}
 
+	function setChange() {
+		var change = $('#totalPaid').autoNumeric('get') - $('#totalPayment').autoNumeric('get');
+		$('#totalChange').autoNumeric('set', change  );
+	}
 </script>
+@endpush

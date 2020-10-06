@@ -18,8 +18,8 @@ class CreateSalesTable extends Migration
                 $table->bigIncrements('id');
                 $table->date('date')->required();
 				
-				$table->unsignedBigInteger('supplier_id')->required();
-				$table->foreign('supplier_id')->references('id')->on('suppliers');
+				$table->unsignedBigInteger('user_id')->required();
+				$table->foreign('user_id')->references('id')->on('users');
 
                 $table->timestamps();
                 $table->softDeletes();

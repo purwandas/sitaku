@@ -9,7 +9,7 @@ use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class SalesImportDataSupplierTemplate implements FromQuery, WithTitle, WithHeadings, WithEvents, ShouldAutoSize
+class SalesImportDataUserTemplate implements FromQuery, WithTitle, WithHeadings, WithEvents, ShouldAutoSize
 {
 
     /**
@@ -17,7 +17,7 @@ class SalesImportDataSupplierTemplate implements FromQuery, WithTitle, WithHeadi
      */
     public function headings(): array
     {
-        return ['SUPPLIER NAME'];
+        return ['USER NAME'];
     }
     
     public function registerEvents(): array
@@ -36,7 +36,7 @@ class SalesImportDataSupplierTemplate implements FromQuery, WithTitle, WithHeadi
 
     public function query()
     {
-        return \App\Supplier::query()->select('suppliers.name as supplier_name');
+        return \App\User::query()->select('users.name as user_name');
     }
 
     /**
@@ -44,6 +44,6 @@ class SalesImportDataSupplierTemplate implements FromQuery, WithTitle, WithHeadi
      */
     public function title(): string
     {
-        return 'Supplier Data';
+        return 'User Data';
     }
 }

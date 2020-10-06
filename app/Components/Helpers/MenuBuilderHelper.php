@@ -79,17 +79,14 @@ class MenuBuilderHelper
 			$label  = labelize($key,'-');
 			$expV   = explode('.',$value);
 			$result = [
-				// "label" => $label,
 				"key"  => $key,
 				"text" => $label,
-				// "url"  => $value,
 				"url"  => route($value),
 				"key"  => $expV[0]
 			];
 		} else if ($type == 2) {
 			$label  = labelize($value,'-');
 			$result = [
-				// "label"    => $label,
 				"key"      => $value,
 				"text"     => $label,
 				"sub-menu" => $sub
@@ -99,10 +96,8 @@ class MenuBuilderHelper
 			$key = substr($value, 0, strlen($value)-6);
 			$label  = labelize($key,'-');
 			$result = [
-				// "label" => $label,
 				"key"  => $key,
 				"text" => $label,
-				// "url"  => $value
 				"url"  => route($value)
         	];
 		}

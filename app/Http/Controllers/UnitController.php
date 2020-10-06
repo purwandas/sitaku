@@ -4,15 +4,16 @@ namespace App\Http\Controllers;
 
 use App\Components\Filters\UnitFilter;
 use App\Components\Helpers\FormBuilderHelper;
+use App\Components\Helpers\MenuBuilderHelper;
 use App\Components\Traits\ApiController;
 use App\Exports\UnitExportPdf;
 use App\Exports\UnitExportXls;
 use App\Imports\UnitImport;
 use App\Templates\UnitImportSheetTemplate;
-use \App\Unit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use \App\Unit;
 
 class UnitController extends Controller
 {
@@ -22,6 +23,7 @@ class UnitController extends Controller
 
     public function index()
     {
+        return response()->json(MenuBuilderHelper::getMenu());
         $data = [
             'title' => $this->label,
             'icon'  => 'fa fa-user-md',

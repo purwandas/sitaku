@@ -14,21 +14,21 @@ class Sales extends BaseModel
         return [
         	// Define rule here to display data on datatable and generate form builder
             // Example : 'name' => 'required|string|min:8|max:10',
-            'date' => 'date',
-			'supplier_id' => 'exists:suppliers,id',
+			'user_id' => 'exists:users,id',
+			'date'    => 'date',
 
         ];
     
     }
 
-    public function supplier()
+    public function user()
 	{
-		return $this->belongsTo($this->_supplier(), 'supplier_id');
+		return $this->belongsTo($this->_user(), 'user_id');
 	}
 
-	public static function _supplier()
+	public static function _user()
 	{
-		return '\\App\Supplier';
+		return '\\App\User';
 	}
 
 	public static function labelText()

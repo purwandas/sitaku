@@ -14,7 +14,7 @@ class SalesImportInputTemplate implements WithHeadings, WithEvents, ShouldAutoSi
     */
     public function headings(): array
     {
-    	return ['DATE', 'SUPPLIER NAME'];
+    	return ['DATE', 'USER NAME'];
     }
     
     public function registerEvents(): array

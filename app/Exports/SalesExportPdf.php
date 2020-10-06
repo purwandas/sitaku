@@ -11,6 +11,7 @@ class SalesExportPdf
 {
 	public static function print($params = [], $fileName)
 	{
+		return false;
 		$filter = new SalesFilter(new Request($params));
 		$data   = Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
 			->select('sales.date', 'suppliers.name as supplier_name')

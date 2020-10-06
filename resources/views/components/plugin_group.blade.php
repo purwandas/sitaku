@@ -70,6 +70,10 @@
             
         }
     });
+
+	$(document).ready(function(){
+	    $('.navbar-nav').find('.nav-link').attr('id','menuToggle')
+	})
 </script>
 
 @yield('inject-view')

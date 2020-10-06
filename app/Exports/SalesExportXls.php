@@ -25,6 +25,7 @@ class SalesExportXls implements FromCollection, WithHeadings, ShouldAutoSize, Wi
 
     public function collection()
     {
+        return false;
         $filter = new SalesFilter(new Request(self::$params));
         return Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
 			->select('sales.date', 'suppliers.name as supplier_name')

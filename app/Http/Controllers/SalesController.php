@@ -21,7 +21,7 @@ class SalesController extends Controller
 {
     use ApiController;
 
-    public $type, $label = "Sales", $icon = 'fa fa-shopping-cart';
+    public $type, $label = "Sales Report", $icon = 'fa fa-shopping-cart';
 
     public function index()
     {
@@ -35,7 +35,7 @@ class SalesController extends Controller
 
         $form_data = new FormBuilderHelper(Sales::class,$data);
         $final     = $form_data
-                    ->setFormPage(true)
+                    ->setCreatable(false)
                     ->useFormBuilder(false)
                     ->get();
         
@@ -44,11 +44,12 @@ class SalesController extends Controller
 
     public function form($id = 0)
     {
+        $label = 'Sales';
         $data = [
-            'title' => $this->label,
+            'title' => $label,
             'icon'  => $this->icon,
             'breadcrumb' => [
-                ['label' => ((!empty($id)) ? 'Edit ' : 'Add new ').$this->label],
+                ['label' => ((!empty($id)) ? 'Edit ' : 'Add new ').$label],
             ],
             'customVariables' => [
                 'id' => $id,
@@ -66,7 +67,7 @@ class SalesController extends Controller
             ]
         ];
 
-        $multipleColumn[0] = [
+        $multipleColumn2[0] = [
             'type'      => 'select2',
             'name'      => 'product',
             'text'      => 'obj.name',
@@ -78,47 +79,45 @@ class SalesController extends Controller
             ]
         ];
 
-        $multipleIndex = 1;
-        foreach (Unit::get() as $key => $value) {
-            $multipleColumn[$multipleIndex++] = [
-                'type'    => 'number',
-                'name'    => 'unit_qty_'.$value->id,
-                'options' => [
-                    'labelText' => $value->name,
-                    'elOptions' => [
-                        'placeholder' => $value->name,
-                        'min'         => 0
-                    ]
-                ]
-            ];
-            $multipleColumn[$multipleIndex++] = [
-                'type'    => 'text',
-                'name'    => 'unit_price_'.$value->id,
-                'options' => [
-                    'labelText' => $value->name,
-                    'elOptions' => [
-                        'placeholder' => $value->name,
-                        'class'       => 'form-control money',
-                        'min'         => 0
-                    ]
-                ]
-            ];
-            $multipleColumn[$multipleIndex++] = [
-                'type'    => 'text',
-                'name'    => 'unit_total_'.$value->id,
-                'options' => [
-                    'labelText' => $value->name,
-                    'elOptions' => [
-                        'placeholder' => $value->name,
-                        'readonly'    => 'readonly',
-                        'class'       => 'form-control money',
-                        'min'         => 0,
-                    ]
-                ]
-            ];
-        }
+        $multipleColumn2[1] = [
+            'type'      => 'select2',
+            'name'      => 'unit',
+            'text'      => 'obj.name',
+            'options'   => 'unit.select2',
+            'keyTerm'   => '_name',
+            'elOptions' => [
+                'placeholder' => 'Unit',
+                'required'    => 'required'
+            ]
+        ];
 
-        $multipleColumn[$multipleIndex] = [
+        $multipleColumn2[2] = [
+            'type'    => 'text',
+            'name'    => 'unit_price',
+            'options' => [
+                'labelText' => 'Price',
+                'elOptions' => [
+                    'placeholder' => 'Price',
+                    'class'       => 'form-control money calc price',
+                    'min'         => 0
+                ]
+            ]
+        ];
+
+        $multipleColumn2[3] = [
+            'type'    => 'text',
+            'name'    => 'unit_qty',
+            'options' => [
+                'labelText' => 'Qty',
+                'elOptions' => [
+                    'placeholder' => 'Qty',
+                    'class'       => 'form-control money calc qty',
+                    'min'         => 0
+                ]
+            ]
+        ];
+
+        $multipleColumn2[4] = [
             'type'      => 'text',
             'name'      => 'total',
             'options' => [
@@ -126,15 +125,15 @@ class SalesController extends Controller
                     'placeholder' => 'Total',
                     'required'    => 'required',
                     'readonly'    => 'readonly',
-                    'class'       => 'form-control money',
+                    'class'       => 'form-control money sub-total',
                 ]
             ]
         ];
 
-        $customFormBuilder['multiplecolumn'] = [
+        $customFormBuilder['multiplecolumn2'] = [
             'type'     => 'multiplecolumn',
             'useLabel' => false,
-            'columns'  => $multipleColumn
+            'columns'  => $multipleColumn2
         ];
 
         $form_data = new FormBuilderHelper(Sales::class,$data);
@@ -151,24 +150,18 @@ class SalesController extends Controller
 
     public function list(SalesFilter $filter)
     {
-        $sales = Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
-			->select('sales.*', 'suppliers.name as supplier_name')
-			->filter($filter)->get();
+        $sales = Sales::filter($filter)->get();
         return $this->sendResponse($sales, 'Get Data Success!');
     }
 
     public function select2(SalesFilter $filter)
     {
-        return Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
-			->select('sales.*', 'suppliers.name as supplier_name')
-			->filter($filter)->get();
+        return Sales::filter($filter)->get();
     }
 
     public function datatable(SalesFilter $filter)
     {
-        $data = Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
-			->select('sales.*', 'suppliers.name as supplier_name')
-			->filter($filter);
+        $data = Sales::filter($filter);
 
         return \DataTables::of($data)
             ->addColumn('action', function ($data){
@@ -195,9 +188,7 @@ class SalesController extends Controller
 
     public function detail($id)
     {
-        $sales = Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
-			->select('sales.*', 'suppliers.name as supplier_name')
-			->findOrFail($id);
+        $sales = Sales::findOrFail($id);
         return $this->sendResponse($sales, 'Get Data Success!');
     }
 

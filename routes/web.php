@@ -24,6 +24,13 @@ Route::get('/', function() {
 
 Route::get('/available-input', 'HomeController@index')->name('available-input.index');
 
+Route::get('sales-form/{id?}', 'SalesController@form')->name('sales-form.index');
+
+Route::group(['prefix' => 'sales','middleware' => ['auth']], function() {
+	Route::get('', 'SalesController@index')->name('sales.index');
+	Route::get('import-template', 'SalesController@importTemplate')->name('sales.import-template');
+});
+
 Route::group(['prefix' => 'role','middleware' => ['auth']], function() {
 	Route::get('', 'RoleController@index')->name('role.index');
 	Route::get('import-template', 'RoleController@importTemplate')->name('role.import-template');
@@ -64,8 +71,3 @@ Route::group(['prefix' => 'product-unit','middleware' => ['auth']], function() {
 	Route::get('import-template', 'ProductUnitController@importTemplate')->name('product-unit.import-template');
 });
 
-Route::group(['prefix' => 'sales','middleware' => ['auth']], function() {
-	Route::get('', 'SalesController@index')->name('sales.index');
-	Route::get('form/{id?}', 'SalesController@form')->name('sales.form');
-	Route::get('import-template', 'SalesController@importTemplate')->name('sales.import-template');
-});
