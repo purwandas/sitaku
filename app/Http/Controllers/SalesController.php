@@ -130,7 +130,7 @@ class SalesController extends Controller
             ]
         ];
 
-        $customFormBuilder['multiplecolumn2'] = [
+        $customFormBuilder['detail'] = [
             'type'     => 'multiplecolumn',
             'useLabel' => false,
             'columns'  => $multipleColumn2

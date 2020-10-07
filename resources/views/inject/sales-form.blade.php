@@ -1,5 +1,5 @@
 @php
-$multipleTable = 'tbl_multiple_multiplecolumn2';
+$multipleTable = 'tbl_multiple_detail';
 @endphp
 
 @push('inject-view')
@@ -7,18 +7,18 @@ $multipleTable = 'tbl_multiple_multiplecolumn2';
 	<div class="col-sm-4 offset-sm-2" style="margin-top: 10px;">
 	    <div class="card card-outline card-secondary">
 			<div class="card-header">
-				<h3 class="card-title">Info Card Example</h3>
+				<h3 class="card-title">Total</h3>
 			</div>
 			<div class="card-body">
 				<div class="form-group row">
-					<label for="totalPayment">Total Payment</label>
+					<label for="totalPayment">Payment</label>
 					<input id="totalPayment" type="text" class="form-control money text-right" onchange="setChange()" readonly>
-					<label for="totalPaid">Total Paid</label>
+					<label for="totalPaid">Paid</label>
 					<input id="totalPaid" type="text" class="form-control money text-right" onchange="setChange()" onkeypress="setChange()">
 				</div>
 			</div>
 			<div class="card-footer">
-				<label for="totalPaid">Total Change</label>
+				<label for="totalPaid">Change</label>
 				<input id="totalChange" type="text" class="form-control money text-right" readonly>
 			</div>
 	    </div>
