@@ -10,6 +10,7 @@ use App\Exports\SalesExportXls;
 use App\Imports\SalesImport;
 use App\Templates\SalesImportSheetTemplate;
 use App\Unit;
+use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -58,6 +59,13 @@ class SalesController extends Controller
 
         $customFormBuilder = [];
 
+        if (!(@\Auth::user()->role_id) == User::MASTER_ADMIN)
+        $customFormBuilder['user_id'] = [
+            'type' => 'hidden',
+            'value' => @\Auth::user()->id
+
+        ];
+
         $customFormBuilder['date'] = [
             'type'      => 'date',
             'value'     => Carbon::now()->format('Y-m-d'),
@@ -75,7 +83,8 @@ class SalesController extends Controller
             'keyTerm'   => '_name',
             'elOptions' => [
                 'placeholder' => 'Product',
-                'required'    => 'required'
+                'required'    => 'required',
+                'class'       => 'get-price product',
             ]
         ];
 
@@ -87,7 +96,8 @@ class SalesController extends Controller
             'keyTerm'   => '_name',
             'elOptions' => [
                 'placeholder' => 'Unit',
-                'required'    => 'required'
+                'required'    => 'required',
+                'class'       => 'get-price unit',
             ]
         ];
 
@@ -112,7 +122,8 @@ class SalesController extends Controller
                 'elOptions' => [
                     'placeholder' => 'Qty',
                     'class'       => 'form-control money calc qty',
-                    'min'         => 0
+                    'min'         => 0,
+                    'width' => '100px',
                 ]
             ]
         ];
@@ -173,6 +184,7 @@ class SalesController extends Controller
 
     public function store(Request $request)
     {
+        return $request->all();
         try{
             $sales = DB::transaction(function () use ($request) {
                 $sales = new Sales;

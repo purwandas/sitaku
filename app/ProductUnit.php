@@ -14,8 +14,9 @@ class ProductUnit extends BaseModel
         return [
         	// Define rule here to display data on datatable and generate form builder
             // Example : 'name' => 'required|string|min:8|max:10',
-            'conversion' => 'string|required',
-			'price' => 'string|required',
+            'conversion' => 'numeric',
+			'selling_price' => 'numeric',
+			'buying_price' => 'numeric',
 			'product_id' => 'exists:products,id',
 			'unit_id' => 'exists:units,id',
 

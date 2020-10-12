@@ -17,6 +17,7 @@ class CreateSalesTable extends Migration
             Schema::create('sales', function (Blueprint $table) {
                 $table->bigIncrements('id');
                 $table->date('date')->required();
+                $table->float('total_payment')->nullable();
 				
 				$table->unsignedBigInteger('user_id')->required();
 				$table->foreign('user_id')->references('id')->on('users');

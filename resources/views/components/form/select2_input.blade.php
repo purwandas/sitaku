@@ -6,7 +6,7 @@ $url    = !empty($url) ? route($url) : '';
 $method = $isDataRequestByAjax ? ( isset($attributes['elOptions']['route']) ? $attributes['elOptions']['route'] : 'POST') : 'POST';
 
 // SET DEFAULT CLASS
-$attributes['elOptions']['class'] = 'select2 form-control';
+$attributes['elOptions']['class'] =  ($attributes['elOptions']['class'] ?? '').' select2 form-control';
 $attributes['elOptions']['style'] = 'width:100%';
 
 // SET DEFAULT ID

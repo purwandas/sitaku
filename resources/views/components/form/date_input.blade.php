@@ -6,6 +6,7 @@ $config['format']      = $config['format'] ?? 'yyyy-mm-dd';
 $config['view']        = $config['view'] ?? 0;
 $config['min_view']    = $config['min_view'] ?? 0;
 $config['orientation'] = $config['orientation'] ?? "bottom";
+$config['elOptions']['autocomplete'] = 'off';
 @endphp
 
 <div class="{{ @$config['containerClass'] ?? 'row form-group' }} {{ $config['useLabel'] ? '' : 'width-100' }} {{ !$errors->has($name) ?: 'has-error' }}">

@@ -13,7 +13,7 @@ $multipleTable = 'tbl_multiple_detail';
 				<div class="form-group row">
 					<label for="totalPayment">Payment</label>
 					<input id="totalPayment" type="text" class="form-control money text-right" onchange="setChange()" readonly>
-					<label for="totalPaid">Paid</label>
+					<label for="totalPaid" style="margin-top: 15px;">Paid</label>
 					<input id="totalPaid" type="text" class="form-control money text-right" onchange="setChange()" onkeypress="setChange()">
 				</div>
 			</div>
@@ -36,10 +36,10 @@ $multipleTable = 'tbl_multiple_detail';
 	var detailTemplate = '';
 
 	$('body #{{$multipleTable}}').on('change', '.calc', function(e) {
-		var parent = $(this).closest('tr'),
-			price = parent.find('.price'),
-			qty = parent.find('.qty'),
-			subTotal = parent.find('.sub-total'),
+		var parent    = $(this).closest('tr'),
+			price     = parent.find('.price'),
+			qty       = parent.find('.qty'),
+			subTotal  = parent.find('.sub-total'),
 			_subTotal = 0;
 
 		_subTotal = price.autoNumeric('get') * qty.autoNumeric('get');
@@ -48,12 +48,25 @@ $multipleTable = 'tbl_multiple_detail';
 		$('#totalPayment').autoNumeric('set', getTotal() );
 	});
 
+	$('body #{{$multipleTable}}').on('change', '.get-price', function(e) {
+		var parent       = $(this).closest('tr'),
+			product      = parent.find('.product'),
+			unit         = parent.find('.unit'),
+			price        = parent.find('.price'),
+			sellingPrice = '';
+
+		(async function() {
+			sellingPrice = await getPrice(product.val(), unit.val());
+			if ($.isNumeric(sellingPrice))
+			price.val(sellingPrice);
+		})();
+	});
+
 	$(document).ready(function() {
 		setTimeout(function() {
 			$('#menuToggle').click()
 			initNumeric();
 		}, 10);
-
 
 		detailTemplate = $('#detailTemplate').html();
 		$('#detailTemplate').html('');
@@ -73,9 +86,33 @@ $multipleTable = 'tbl_multiple_detail';
 		initNumeric();
     });
 
+    async function getPrice(productId = '-', unitId = '-') {
+    	var price = '';
+
+    	if (!isNaN(productId) && !isNaN(unitId))
+    	await $.ajax({
+            type: 'POST',
+            url: "{{route('product-unit.get-price')}}/" + (productId??'-') + "/" + (unitId??'-'),
+            success: function (result) {
+				var data = result.data;
+				price    = data.selling_price
+            },
+            error: function(xhr, textStatus, errorThrown){
+                swal({
+                	title: "Gagal melakukan request",
+                	text: xhr.responseJSON.msg,
+                	type: "error"
+                });
+            }
+        });
+    	return price;
+    }
+
 	function initNumeric() {
 		$('.money').autoNumeric('init',{mDec:7,aPad:0});
 		$('.money').css('min-width','130px');
+		$('.qty').css('min-width','90px');
+		$('.qty').css('width','90px');
 	}
 
 	function getTotal() {

@@ -18,7 +18,7 @@ class CreateProductsTable extends Migration
                 $table->bigIncrements('id');
                 $table->string('name')->required();
 				$table->double('stock')->required();
-				$table->integer('buying_price')->required();
+				$table->integer('buying_price')->nullable();
 				$table->integer('selling_price')->nullable();
 				
                 $table->unsignedBigInteger('unit_id')->nullable();
@@ -38,8 +38,9 @@ class CreateProductsTable extends Migration
         if(!Schema::hasTable('product_units')){
             Schema::create('product_units', function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->string('conversion')->required();
-                $table->string('price')->required();
+                $table->string('conversion')->nullable();
+                $table->string('selling_price')->nullable();
+                $table->string('buying_price')->nullable();
                 
                 $table->unsignedBigInteger('product_id')->required();
                 $table->foreign('product_id')->references('id')->on('products');

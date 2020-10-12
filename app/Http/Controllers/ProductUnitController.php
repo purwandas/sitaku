@@ -8,11 +8,12 @@ use App\Components\Traits\ApiController;
 use App\Exports\ProductUnitExportPdf;
 use App\Exports\ProductUnitExportXls;
 use App\Imports\ProductUnitImport;
+use App\Product;
 use App\Templates\ProductUnitImportSheetTemplate;
-use \App\ProductUnit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use \App\ProductUnit;
 
 class ProductUnitController extends Controller
 {
@@ -66,6 +67,17 @@ class ProductUnitController extends Controller
                 <button data-url=".route('product-unit.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
             })
             ->make(true);
+    }
+
+    public function getPrice($productId = '', $unitId = '')
+    {
+        $price = null;
+        if (! ($data = Product::whereId($productId)->whereUnitId($unitId)->first()) ) {
+            $data = ProductUnit::whereProductId($productId)->whereUnitId($unitId)->first();
+        }
+
+        $price = @$data->selling_price;
+        return $this->sendResponse(['selling_price' => $price], 'Get Data Success!');
     }
 
     public function store(Request $request)

@@ -81,7 +81,11 @@
 				$elOptions = arrayToHtml($column['options']['elOptions'] ?? []);
 			@endphp
 			@if($column['type'] == 'select2')
-				newRow += '<select class="select2 form-control" name="{{$name}}['+row+'][{{$column['name']}}]" id="{{$id}}_'+row+'" style="width: 100%" {!! $elOptions !!}>'+option+'</select>';
+				@php
+					$column['elOptions']['class'] = ($column['elOptions']['class'] ?? '') . ' select2 form-control';
+					$elOptions = arrayToHtml($column['elOptions'] ?? []);
+				@endphp
+				newRow += '<select name="{{$name}}['+row+'][{{$column['name']}}]" id="{{$id}}_'+row+'" style="width: 100%" {!! $elOptions !!}>'+option+'</select>';
 			@elseif($column['type'] == 'multipleswitch')
 				newRow += '<div class="row col-sm-12">';
 				@foreach ($column['columns'] as $col)
@@ -126,9 +130,10 @@
 				@php
 					$column['text'] = @$column['text'] ?? 'obj.name';
 					$column['key']  = @$column['key'] ? "obj.".$column['key'] : 'obj.id';
+					$placeholder    = $column['elOptions']['placeholder'] ?? 'Select '.ucwords( strtolower($column['options']['labelText']  ?? $column['name']) ).'...';
 				@endphp
 				$('#{{$id}}_'+row).select2({
-				    placeholder: 'Select {{ucwords( strtolower($column['options']['labelText']  ?? $column['name']) )}}...',
+				    placeholder: "{{ $placeholder }}",
 				    allowClear: true,
 				    ajax: {
 				    	url: "{{route($column['options'])}}",

@@ -129,6 +129,7 @@ Route::group(['prefix' => 'sales','middleware' => ['auth:api']], function() {
 Route::group(['prefix' => 'product-unit','middleware' => ['auth:api']], function() {
 	Route::get('', 'ProductUnitController@list')->name('product-unit.list');
 	Route::post('', 'ProductUnitController@store')->name('product-unit.create');
+	Route::post('get-price/{productId?}/{unitId?}', 'ProductUnitController@getPrice')->name('product-unit.get-price');
 	Route::get('{id}', 'ProductUnitController@detail')->name('product-unit.detail')->where('id', '[0-9]+');
 	Route::put('{id}', 'ProductUnitController@update')->name('product-unit.edit')->where('id', '[0-9]+');
 	Route::delete('{id}', 'ProductUnitController@destroy')->name('product-unit.delete')->where('id', '[0-9]+');
