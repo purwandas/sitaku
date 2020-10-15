@@ -19,11 +19,8 @@
 @yield('switch-js')
 @yield('file-js')
 @yield('datatable-js')
-@yield('additional-js')
-@stack('additional-js')
-
-@yield('function-js')
-@stack('function-js')
+@yield('auto-numeric-plugin-js')
+@stack('auto-numeric-plugin-js')
 
 <!-- Sweet-Alert  -->
 <link href="{{asset('assets/formbuilder/sweet-alert2/sweetalert2.min.css')}}" rel="stylesheet" type="text/css">
@@ -47,6 +44,8 @@
     });
 
 	$(document).ajaxError(function( event, jqxhr, settings, thrownError ) {
+		console.log(jqxhr)
+		console.log(thrownError)
         if(jqxhr.status == 401) {
         	swal({
 	            title: 'Unauthenticated!',
@@ -71,10 +70,22 @@
         }
     });
 
-	$(document).ready(function(){
-	    $('.navbar-nav').find('.nav-link').attr('id','menuToggle')
-	})
+	@stack('js-code')
+
+    function isNumberKey(evt)
+    {
+        var charCode = (evt.which) ? evt.which : evt.keyCode
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) return false;
+
+        return true;
+    }
 </script>
+
+@yield('additional-js')
+@stack('additional-js')
+
+@yield('function-js')
+@stack('function-js')
 
 @yield('inject-view')
 @stack('inject-view')

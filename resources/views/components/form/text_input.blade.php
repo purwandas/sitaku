@@ -18,6 +18,17 @@ if(isset($config['elOptions'])){
     }
 }
 
+if (array_key_exists('autoNumeric', $config)) {
+    if (!is_array($config['autoNumeric'])) {
+        $config['autoNumeric'] = [
+            // 'allowDecimalPadding' => false,
+            // 'decimalPlaces'       => 7,
+            'decimalCharacter'    => ',',
+            'digitGroupSeparator' => '.'
+        ];
+    }
+}
+
 @endphp
 
 <div class="{{ @$config['containerClass'] ?? 'form-group row' }}">
@@ -54,24 +65,28 @@ if(isset($config['elOptions'])){
 
 @if(@$config['autoNumeric'] || is_array(@$config['autoNumeric']))
 @section('auto-numeric-plugin-js')
-<script src="{{asset('assets/formbuilder/auto-numeric/autoNumeric.js')}}"></script>
+<script src="{{asset('assets/formbuilder/auto-numeric/autonumeric@4.6.0.js')}}"></script>
+@endsection
+
+@push('auto-numeric-plugin-js')
 <script type="text/javascript">
     @if( is_array($config['autoNumeric']) )
-        $('#{{$config['elOptions']['id']}}1').autoNumeric('init',{!! json_encode($config['autoNumeric'], JSON_FORCE_OBJECT) !!});
+    var parse = {!! json_encode($config['autoNumeric'], JSON_FORCE_OBJECT) !!};
+        const autonumeric_{{$config['elOptions']['id']}} = new AutoNumeric('#{{$config['elOptions']['id']}}1', parse);
     @else
-        $('#{{$config['elOptions']['id']}}1').autoNumeric();
+        const autonumeric_{{$config['elOptions']['id']}} = new AutoNumeric('#{{$config['elOptions']['id']}}1');
     @endif
 
     @if ($value)
-    $('#{{$config['elOptions']['id']}}1').autoNumeric('set', {{$value}});
+        AutoNumeric.set('#{{$config['elOptions']['id']}}1', {{$value}});
     @endif
 
     $("#{{$config['elOptions']['id']}}1").change(function(){
-        $("#{{$config['elOptions']['id']}}").val($(this).autoNumeric('get'));
+        $("#{{$config['elOptions']['id']}}").val(AutoNumeric.getNumericString('#{{$config['elOptions']['id']}}1'));
     });
     $("#{{$config['elOptions']['id']}}").change(function(){
-        $("#{{$config['elOptions']['id']}}1").autoNumeric('set',$(this).val());
+        AutoNumeric.set('#{{$config['elOptions']['id']}}1',$(this).val());
     });
 </script>
-@endsection
+@endpush
 @endif

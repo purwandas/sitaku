@@ -12,14 +12,14 @@ $multipleTable = 'tbl_multiple_detail';
 			<div class="card-body">
 				<div class="form-group row">
 					<label for="totalPayment">Payment</label>
-					<input id="totalPayment" type="text" class="form-control money text-right" onchange="setChange()" readonly>
+					<input id="totalPayment" type="text" class="form-control money text-right calc-change totalPayment" readonly>
 					<label for="totalPaid" style="margin-top: 15px;">Paid</label>
-					<input id="totalPaid" type="text" class="form-control money text-right" onchange="setChange()" onkeypress="setChange()">
+					<input id="totalPaid" type="text" class="form-control money text-right calc-change totalPaid">
 				</div>
 			</div>
 			<div class="card-footer">
 				<label for="totalPaid">Change</label>
-				<input id="totalChange" type="text" class="form-control money text-right" readonly>
+				<input id="totalChange" type="text" class="form-control money text-right totalChange" readonly>
 			</div>
 	    </div>
 	</div>
@@ -35,7 +35,15 @@ $multipleTable = 'tbl_multiple_detail';
 
 	var detailTemplate = '';
 
-	$('body #{{$multipleTable}}').on('change', '.calc', function(e) {
+	$('body').on('keyup', '.calc-change', function(e) {
+		setChange();
+	});
+
+	$('body').on('change', '.calc-change', function(e) {
+		setChange();
+	});
+
+	$('body #{{$multipleTable}}').on('keyup', '.calc', function(e) {
 		var parent    = $(this).closest('tr'),
 			price     = parent.find('.price'),
 			qty       = parent.find('.qty'),
@@ -109,7 +117,7 @@ $multipleTable = 'tbl_multiple_detail';
     }
 
 	function initNumeric() {
-		$('.money').autoNumeric('init',{mDec:7,aPad:0});
+		$('.money').autoNumeric('init',{mDec:7,aPad:0,vMin:-9999999999,vMax:9999999999});
 		$('.money').css('min-width','130px');
 		$('.qty').css('min-width','90px');
 		$('.qty').css('width','90px');
@@ -117,13 +125,13 @@ $multipleTable = 'tbl_multiple_detail';
 
 	function getTotal() {
 		var ek = $('.sub-total').map((_,el) => el.value.split(',').join('')).get();
+		setChange();
 		return ek.reduce((a, b) => Number(a) + Number(b), 0);
 	}
 
 	function setChange() {
-		var change = $('#totalPaid').autoNumeric('get') - $('#totalPayment').autoNumeric('get');
-		if (change > 0)
-		$('#totalChange').autoNumeric('set', change  );
+		var change = $('.totalPaid').autoNumeric('get') - $('.totalPayment').autoNumeric('get');
+		$('.totalChange').autoNumeric('set', change  );
 	}
 </script>
 @endpush
