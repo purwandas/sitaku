@@ -44,6 +44,7 @@ class SalesController extends Controller
                     ->setOrderDatatableColumns([
                         3 => 'product',
                     ])
+                    ->setDatatableButtons(['export-xls','export-pdf','job-status'])
                     ->get();
         
         return view('components.global_form', $final);
@@ -203,8 +204,9 @@ class SalesController extends Controller
                 return currency_ifexist($data->total_change, 'Rp');
             })
             ->addColumn('action', function ($data){
-                return "<button onclick=\"editModalSales('".route('sales.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalFormSales' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>
-                <button data-url=".route('sales.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
+                $result = "<button onclick=\"editModalSales('".route('sales.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalFormSales' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>";
+                $result = "<button data-url=".route('sales.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
+                return $result;
             })
             ->make(true);
     }
