@@ -8,6 +8,8 @@ use App\Components\Traits\ApiController;
 use App\Exports\SalesExportPdf;
 use App\Exports\SalesExportXls;
 use App\Imports\SalesImport;
+use App\ProductUnit;
+use App\SalesDetail;
 use App\Templates\SalesImportSheetTemplate;
 use App\Unit;
 use App\User;
@@ -38,6 +40,10 @@ class SalesController extends Controller
         $final     = $form_data
                     ->setCreatable(false)
                     ->useFormBuilder(false)
+                    ->setAdditionalDatatableColumns(['product'])
+                    ->setOrderDatatableColumns([
+                        3 => 'product',
+                    ])
                     ->get();
         
         return view('components.global_form', $final);
@@ -152,6 +158,7 @@ class SalesController extends Controller
                     ->setFormPage(true)
                     ->useModal(false)
                     ->useDatatable(false)
+                    ->setExceptFormBuilderColumns(['total_payment', 'total_paid', 'total_change'])
                     ->setCustomFormBuilder($customFormBuilder)
                     ->injectView('inject/sales-form')
                     ->get();
@@ -172,9 +179,20 @@ class SalesController extends Controller
 
     public function datatable(SalesFilter $filter)
     {
-        $data = Sales::filter($filter);
+        $data = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter);
 
         return \DataTables::of($data)
+            ->editColumn('product', function($data){
+                $detail = SalesDetail::whereSalesId($data->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
+                if (count($detail)) {
+                    if (count($detail) <= 5) {
+                        $result = implode(', ', $detail);
+                    } else {
+                        $result = 'detailButton (next)';
+                    }
+                }
+                return @$result ?? '-';
+            })
             ->addColumn('action', function ($data){
                 return "<button onclick=\"editModalSales('".route('sales.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalFormSales' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>
                 <button data-url=".route('sales.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
@@ -184,11 +202,36 @@ class SalesController extends Controller
 
     public function store(Request $request)
     {
-        return $request->all();
         try{
             $sales = DB::transaction(function () use ($request) {
-                $sales = new Sales;
-                $sales->fillAndValidate()->save();
+                $sales      = new Sales;
+                $newRequest = $request->only(['date','user_id', 'total_payment', 'total_paid', 'total_change']);
+                if (!array_key_exists('user_id', $newRequest)) {
+                    $newRequest['user_id'] = \Auth::user()->id;
+                }
+                $newRequest['total_payment'] = getAutoNumeric($newRequest['total_payment']);
+                $newRequest['total_paid']    = getAutoNumeric($newRequest['total_paid']);
+                $newRequest['total_change']  = getAutoNumeric($newRequest['total_change']);
+                $sales->fillAndValidate($newRequest)->save();
+
+                foreach ($request['detail'] as $key => $value) {
+                    ProductUnit::updateOrCreate([
+                        'product_id' => $value['product'],
+                        'unit_id'    => $value['unit'],
+                    ],[
+                        'selling_price' => $value['unit_price']
+                    ]);
+
+                    SalesDetail::updateOrCreate([
+                        'sales_id'   => $sales->id,
+                        'product_id' => $value['product'],
+                        'unit_id'    => $value['unit'],
+                    ],[
+                        'price'      => $value['unit_price'],
+                        'qty'        => $value['unit_qty'],
+                        'total'      => $value['total'],
+                    ]);
+                }
                 return $sales;
             });
         }catch(\Exception $ex){

@@ -14,10 +14,12 @@ class SalesDetail extends BaseModel
         return [
         	// Define rule here to display data on datatable and generate form builder
             // Example : 'name' => 'required|string|min:8|max:10',
-            'qty' => 'string|required',
-			'unit_id' => 'exists:units,id',
-			'product_id' => 'exists:products,id',
-			'sales_id' => 'exists:sales,id',
+            'qty' => 'numeric|required',
+            'price' => 'numeric|required',
+            'total' => 'numeric|required',
+			'unit_id' => 'exists:units,id|required',
+			'product_id' => 'exists:products,id|required',
+			'sales_id' => 'exists:sales,id|required',
 
         ];
     

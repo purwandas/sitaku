@@ -34,6 +34,20 @@ if(!function_exists('get_auth')){
     }
 }
 
+if(!function_exists('getAutoNumeric')){
+    function getAutoNumeric($value)
+    {
+    	return str_replace(',', '.', str_replace('.', '', $value) );
+    }
+}
+
+if(!function_exists('moveArrayElement')){
+	function moveArrayElement(&$array, $a, $b) {
+	    $out = array_splice($array, $a, 1);
+	    array_splice($array, $b, 0, $out);
+	}
+}
+
 if(!function_exists('get_input_type')){
     function get_input_type($value)
     {

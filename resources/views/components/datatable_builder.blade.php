@@ -3,6 +3,7 @@ $useModal      = $useModal ?? false;
 $name          = $name ?? @$model::toKey()['snake'];
 $class         = $class ?? @$model::toKey()['class'];
 $cRoute        = $cRoute ?? @$model::toKey()['route'];
+$orderC        = $orderColumn ?? [];
 $exceptForeign = @$exceptForeign ?? [];
 @endphp
 
@@ -54,31 +55,35 @@ $exceptForeign = @$exceptForeign ?? [];
 			$columnDefs = isset($columnDefs) ? $columnDefs : [];
 			$merged     = array_merge(@$useDatatableAction ? ['action'=>''] : [], $model::rule());
 			removeArrayByKey($merged, $except);
-			$merged     = array_merge($merged, $arr);
-	    	@endphp
 
-	    	@foreach($merged as $key => $value)
-				@php
-					$column    = $key;
+			$merged = array_merge($merged, $arr);
+			$merged = array_keys($merged);
 
-					$foreign   = isForeign($key, $exceptForeign);
-					if ($foreign['status']) {
-						$column    = $foreign['column'];
-						$related   = getForeignClass($model, $foreign['column']);
-						$label     = @$related::labelText()[0] ?? ['name'];
-						$columns[] = ['data' => $column.'_'.$label];
-					} else {
-						$columns[] = ['data' => $key];
-					}
+			foreach ($orderC as $key => $value) {
+				moveArrayElement($merged, array_search($value, $merged), $key);
+			}
 
-					if (array_key_exists($key, $custom)) {
-						$column    = $custom[$key];
-					} else {
-						$column    = ucwords( str_replace("_", " ", $column) );
-					}
-				@endphp
-				<th>{{$column}}</th>
-		    @endforeach
+	    	foreach($merged as $key){
+				$column    = $key;
+
+				$foreign   = isForeign($key, $exceptForeign);
+				if ($foreign['status']) {
+					$column    = $foreign['column'];
+					$related   = getForeignClass($model, $foreign['column']);
+					$label     = @$related::labelText()[0] ?? ['name'];
+					$columns[] = ['data' => $column.'_'.$label];
+				} else {
+					$columns[] = ['data' => $key];
+				}
+
+				if (array_key_exists($key, $custom)) {
+					$column    = $custom[$key];
+				} else {
+					$column    = ucwords( str_replace("_", " ", $column) );
+				}
+				echo "<th>". $column ."</th>";
+		    }
+		    @endphp
 		    <!-- End From Model -->
 
 

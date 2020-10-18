@@ -12,22 +12,20 @@ $multipleTable = 'tbl_multiple_detail';
 			<div class="card-body">
 				<div class="form-group row">
 					<label for="totalPayment">Payment</label>
-					<input id="totalPayment" type="text" class="form-control money text-right calc-change totalPayment" readonly>
+					<input id="totalPayment" name="total_payment" type="text" class="form-control money text-right calc-change totalPayment" readonly>
 					<label for="totalPaid" style="margin-top: 15px;">Paid</label>
-					<input id="totalPaid" type="text" class="form-control money text-right calc-change totalPaid">
+					<input id="totalPaid" name="total_paid" type="text" class="form-control money text-right calc-change totalPaid">
 				</div>
 			</div>
 			<div class="card-footer">
 				<label for="totalPaid">Change</label>
-				<input id="totalChange" type="text" class="form-control money text-right totalChange" readonly>
+				<input id="totalChange" name="total_change" type="text" class="form-control money text-right totalChange" readonly>
 			</div>
 	    </div>
 	</div>
 	<!-- /.card -->
 </div>
 @endpush
-
-@include('inject/table-total')
 
 @push('additional-js')
 <script src="{{asset('assets/formbuilder/auto-numeric/autoNumeric.js')}}"></script>
@@ -117,14 +115,14 @@ $multipleTable = 'tbl_multiple_detail';
     }
 
 	function initNumeric() {
-		$('.money').autoNumeric('init',{mDec:7,aPad:0,vMin:-9999999999,vMax:9999999999});
+		$('.money').autoNumeric('init',{aDec: ',',aSep: '.',mDec:7,aPad:0,vMin:-9999999999,vMax:9999999999});
 		$('.money').css('min-width','130px');
 		$('.qty').css('min-width','90px');
 		$('.qty').css('width','90px');
 	}
 
 	function getTotal() {
-		var ek = $('.sub-total').map((_,el) => el.value.split(',').join('')).get();
+		var ek = $('.sub-total').map((_,el) => el.value.split('.').join('').replace(',','.')).get();
 		setChange();
 		return ek.reduce((a, b) => Number(a) + Number(b), 0);
 	}

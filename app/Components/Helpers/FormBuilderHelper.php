@@ -124,10 +124,18 @@ class FormBuilderHelper
 		return $this->getRecentArray();
 	}
 
-	public function setOrder($array = [[1, 'DESC']])
+	public function setOrder($array = [[1, 'DESC']]) //table data order by column
 	{
 		$config = $this->getGlobalConfig();
 		$config['setupDatatableBuilder']['order'] = $array;
+		$this->config = $config;
+		return $this->getRecentArray();
+	}
+
+	public function setOrderDatatableColumns($array = []) //table column position, ex: [1 => 'name', 2 => 'age']
+	{
+		$config = $this->getGlobalConfig();
+		$config['setupDatatableBuilder']['orderColumn'] = $array;
 		$this->config = $config;
 		return $this->getRecentArray();
 	}
@@ -237,6 +245,18 @@ class FormBuilderHelper
 		return $this->getRecentArray();
 	}
 
+	public function setDontEditFormBuilder($v = '0')
+	{
+		$config = $this->getGlobalConfig();
+		if($config['useFormBuilder']){
+			$config['setupFormBuilder']['dontEdit'] = $v;
+			$this->config = $config;
+			return $this->getRecentArray();
+		}
+
+		throw new \Exception("Form Builder must be used");
+	}
+
 	public function setCustomFormBuilder($v = [])
 	{
 		$config = $this->getGlobalConfig();
@@ -293,21 +313,6 @@ class FormBuilderHelper
 		if($config['useDatatable'] && $config['useUtilities']){
 			if(is_array($v)){
 				$config['setupDatatableBuilder']['button'] = $v;
-				$this->config = $config;
-				return $this->getRecentArray();
-			}
-			throw new \Exception("Datatable button must be an array");
-		}
-		throw new \Exception("Datatable and Utilities must be used");
-	}
-
-	public function setAdditionalDatatableButtons($v = [], $position = 'left')
-	{
-		// availabel position : left & right
-		$config = $this->getGlobalConfig();
-		if($config['useDatatable'] && $config['useUtilities']){
-			if(is_array($v)){
-				$config['setupDatatableBuilder']['button-'.$position] = DatatableBuilderHelper::button($v);
 				$this->config = $config;
 				return $this->getRecentArray();
 			}
@@ -382,6 +387,21 @@ class FormBuilderHelper
 			$config['setupDatatableBuilder']['additional'] = $v;
 			$this->config = $config;
 			return $this->getRecentArray();
+		}
+		throw new \Exception("Datatable must be used");
+	}
+
+	public function setAdditionalDatatableButtons($v = [], $position = 'left')
+	{
+		// availabel position : left & right
+		$config = $this->getGlobalConfig();
+		if($config['useDatatable']){
+			if(is_array($v)){
+				$config['setupDatatableBuilder']['button-'.$position] = DatatableBuilderHelper::button($v);
+				$this->config = $config;
+				return $this->getRecentArray();
+			}
+			throw new \Exception("Datatable button must be an array");
 		}
 		throw new \Exception("Datatable must be used");
 	}

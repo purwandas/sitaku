@@ -65,27 +65,26 @@ if (array_key_exists('autoNumeric', $config)) {
 
 @if(@$config['autoNumeric'] || is_array(@$config['autoNumeric']))
 @section('auto-numeric-plugin-js')
-<script src="{{asset('assets/formbuilder/auto-numeric/autonumeric@4.6.0.js')}}"></script>
+<script src="{{asset('assets/formbuilder/auto-numeric/autoNumeric.js')}}"></script>
 @endsection
 
 @push('auto-numeric-plugin-js')
 <script type="text/javascript">
     @if( is_array($config['autoNumeric']) )
-    var parse = {!! json_encode($config['autoNumeric'], JSON_FORCE_OBJECT) !!};
-        const autonumeric_{{$config['elOptions']['id']}} = new AutoNumeric('#{{$config['elOptions']['id']}}1', parse);
+        $('#{{$config['elOptions']['id']}}1').autoNumeric('init',{!! json_encode($config['autoNumeric'], JSON_FORCE_OBJECT) !!});
     @else
-        const autonumeric_{{$config['elOptions']['id']}} = new AutoNumeric('#{{$config['elOptions']['id']}}1');
+        $('#{{$config['elOptions']['id']}}1').autoNumeric();
     @endif
 
     @if ($value)
-        AutoNumeric.set('#{{$config['elOptions']['id']}}1', {{$value}});
+        $('#{{$config['elOptions']['id']}}1').autoNumeric('set', {{$value}});
     @endif
 
     $("#{{$config['elOptions']['id']}}1").change(function(){
-        $("#{{$config['elOptions']['id']}}").val(AutoNumeric.getNumericString('#{{$config['elOptions']['id']}}1'));
+        $("#{{$config['elOptions']['id']}}").val($(this).autoNumeric('get'));
     });
     $("#{{$config['elOptions']['id']}}").change(function(){
-        AutoNumeric.set('#{{$config['elOptions']['id']}}1',$(this).val());
+        $("#{{$config['elOptions']['id']}}1").autoNumeric('set',$(this).val());
     });
 </script>
 @endpush

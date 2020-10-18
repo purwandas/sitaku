@@ -18,6 +18,8 @@ class CreateSalesTable extends Migration
                 $table->bigIncrements('id');
                 $table->date('date')->required();
                 $table->float('total_payment')->nullable();
+                $table->float('total_paid')->nullable();
+                $table->float('total_change')->nullable();
 				
 				$table->unsignedBigInteger('user_id')->required();
 				$table->foreign('user_id')->references('id')->on('users');

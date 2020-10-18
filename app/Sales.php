@@ -16,6 +16,9 @@ class Sales extends BaseModel
             // Example : 'name' => 'required|string|min:8|max:10',
 			'user_id' => 'exists:users,id',
 			'date'    => 'date',
+			'total_payment' => 'numeric',
+			'total_paid'    => 'numeric',
+			'total_change'  => 'numeric',
 
         ];
     

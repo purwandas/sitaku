@@ -16,7 +16,9 @@ class CreateSalesDetailsTable extends Migration
         if(!Schema::hasTable('sales_details')){
             Schema::create('sales_details', function (Blueprint $table) {
                 $table->bigIncrements('id');
-                $table->string('qty')->required();
+                $table->float('qty')->required();
+                $table->float('price')->required();
+                $table->double('total')->required();
 				
 				$table->unsignedBigInteger('unit_id')->required();
 				$table->foreign('unit_id')->references('id')->on('units');
