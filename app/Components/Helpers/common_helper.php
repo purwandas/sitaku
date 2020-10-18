@@ -48,6 +48,39 @@ if(!function_exists('moveArrayElement')){
 	}
 }
 
+if(!function_exists('get_currency')){
+    function get_currency($value, $front = 'Rp', $back = '')
+    {
+        return $front .' '. numbering_ifexist($value) . $back;
+    }
+}
+
+if(!function_exists('currency_ifexist')){
+    function currency_ifexist($value, $front = 'Rp', $back = '', $ifEmpty = '-')
+    {
+        return !empty($value) && is_numeric($value) ? get_currency($value, $front, $back) : $ifEmpty;
+    }
+}
+
+if(!function_exists('numbering')){
+    function numbering($value, $decimalPlace = 0){
+        return number_format($value, $decimalPlace, ',', '.');
+    }
+}
+
+if(!function_exists('numbering_ifexist')){
+    function numbering_ifexist($value, $decimalPlace = '', $ifEmpty = '-'){
+        return !empty(@$value) && is_numeric($value) ? numbering_decimal($value, $decimalPlace) : $ifEmpty;
+    }
+}
+
+if(!function_exists('numbering_decimal')){
+    function numbering_decimal($value, $decimalPlace = ''){
+		$decimalPlace = !empty($decimalPlace) ? $decimalPlace : strlen(substr(strrchr($value, "."), 1));
+        return numbering($value, $decimalPlace);
+    }
+}
+
 if(!function_exists('get_input_type')){
     function get_input_type($value)
     {

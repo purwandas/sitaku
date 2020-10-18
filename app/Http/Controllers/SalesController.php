@@ -193,6 +193,15 @@ class SalesController extends Controller
                 }
                 return @$result ?? '-';
             })
+            ->editColumn('total_payment', function($data){
+                return currency_ifexist($data->total_payment, 'Rp');
+            })
+            ->editColumn('total_paid', function($data){
+                return currency_ifexist($data->total_paid, 'Rp');
+            })
+            ->editColumn('total_change', function($data){
+                return currency_ifexist($data->total_change, 'Rp');
+            })
             ->addColumn('action', function ($data){
                 return "<button onclick=\"editModalSales('".route('sales.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalFormSales' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>
                 <button data-url=".route('sales.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
