@@ -24,7 +24,13 @@ Route::get('/', function() {
 
 Route::get('/available-input', 'HomeController@index')->name('available-input.index');
 
+Route::get('purchase-form/{id?}', 'PurchaseController@form')->name('purchase-form.index');
 Route::get('sales-form/{id?}', 'SalesController@form')->name('sales-form.index');
+
+Route::group(['prefix' => 'purchase','middleware' => ['auth']], function() {
+	Route::get('', 'PurchaseController@index')->name('purchase.index');
+	Route::get('import-template', 'PurchaseController@importTemplate')->name('purchase.import-template');
+});
 
 Route::group(['prefix' => 'sales','middleware' => ['auth']], function() {
 	Route::get('', 'SalesController@index')->name('sales.index');

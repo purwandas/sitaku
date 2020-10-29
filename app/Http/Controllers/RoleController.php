@@ -31,7 +31,9 @@ class RoleController extends Controller
         ];
 
         $form_data = new FormBuilderHelper(Role::class,$data);
-        $final     = $form_data->get();
+        $final     = $form_data
+                    ->useUtilities(false)
+                    ->get();
         
         return view('components.global_form', $final);
     }

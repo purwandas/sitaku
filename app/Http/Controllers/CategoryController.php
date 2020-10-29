@@ -31,7 +31,9 @@ class CategoryController extends Controller
         ];
 
         $form_data = new FormBuilderHelper(Category::class,$data);
-        $final     = $form_data->get();
+        $final     = $form_data
+                    ->useUtilities(false)
+                    ->get();
         
         return view('components.global_form', $final);
     }

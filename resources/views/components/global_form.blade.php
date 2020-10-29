@@ -41,8 +41,12 @@
 @if(isset($injectView))
 	@if(is_array($injectView))
 		@if(count($injectView) > 0)
-			@foreach($injectView as $view)
-				@include($view)
+			@foreach($injectView as $key => $value)
+				@if(is_numeric($key))
+					@include($value)
+				@else
+					@include($key,$value)
+				@endif
 			@endforeach
 		@endif
 	@else

@@ -114,7 +114,7 @@ $exceptForeign = @$exceptForeign ?? [];
 			@include('components.fn_upload', ['name' => $name, 'form_url' => route($cRoute.'.import'), 'template_url' => route($cRoute.'.import-template')])
 		@endif
 		@if($useUtilities)
-			<button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{!! getSvgIcon('cil-cloud-download','mt-m-2') !!} Export</button>
+			<button type="button" class="btn btn-info btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{!! getSvgIcon('fa-download','mt-m-2') !!} Export</button>
 			<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 				@if( in_array('export-xls', $button) || ($useUtilities && count($button) == 0) )
 					@include('components.fn_download', ['url' => $cRoute.'.export-xls', 'type' => 'xls', 'icon' => 'fas fa-file-excel'])

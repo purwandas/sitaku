@@ -120,6 +120,7 @@ Route::group(['prefix' => 'sales','middleware' => ['auth:api']], function() {
 	Route::put('{id}', 'SalesController@update')->name('sales.edit')->where('id', '[0-9]+');
 	Route::delete('{id}', 'SalesController@destroy')->name('sales.delete')->where('id', '[0-9]+');
 	Route::post('datatable', 'SalesController@datatable')->name('sales.datatable');
+	Route::post('datatable-detail/{id?}', 'SalesController@datatableDetail')->name('sales.datatable-detail');
 	Route::post('export-xls', 'SalesController@exportXls')->name('sales.export-xls');
 	Route::post('export-pdf', 'SalesController@exportPdf')->name('sales.export-pdf');
 	Route::post('import', 'SalesController@import')->name('sales.import');
@@ -151,4 +152,18 @@ Route::group(['prefix' => 'product','middleware' => ['auth:api']], function() {
 	Route::post('export-pdf', 'ProductController@exportPdf')->name('product.export-pdf');
 	Route::post('import', 'ProductController@import')->name('product.import');
 	Route::post('select2', 'ProductController@select2')->name('product.select2');
+});
+
+Route::group(['prefix' => 'purchase','middleware' => ['auth:api']], function() {
+	Route::get('', 'PurchaseController@list')->name('purchase.list');
+	Route::post('', 'PurchaseController@store')->name('purchase.create');
+	Route::get('{id}', 'PurchaseController@detail')->name('purchase.detail')->where('id', '[0-9]+');
+	Route::put('{id}', 'PurchaseController@update')->name('purchase.edit')->where('id', '[0-9]+');
+	Route::delete('{id}', 'PurchaseController@destroy')->name('purchase.delete')->where('id', '[0-9]+');
+	Route::post('datatable', 'PurchaseController@datatable')->name('purchase.datatable');
+	Route::post('datatable-detail/{id?}', 'PurchaseController@datatableDetail')->name('purchase.datatable-detail');
+	Route::post('export-xls', 'PurchaseController@exportXls')->name('purchase.export-xls');
+	Route::post('export-pdf', 'PurchaseController@exportPdf')->name('purchase.export-pdf');
+	Route::post('import', 'PurchaseController@import')->name('purchase.import');
+	Route::post('select2', 'PurchaseController@select2')->name('purchase.select2');
 });

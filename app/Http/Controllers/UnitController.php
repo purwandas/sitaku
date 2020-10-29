@@ -23,7 +23,6 @@ class UnitController extends Controller
 
     public function index()
     {
-        return response()->json(MenuBuilderHelper::getMenu());
         $data = [
             'title' => $this->label,
             'icon'  => 'fa fa-user-md',
@@ -33,7 +32,9 @@ class UnitController extends Controller
         ];
 
         $form_data = new FormBuilderHelper(Unit::class,$data);
-        $final     = $form_data->get();
+        $final     = $form_data
+                    ->useUtilities(false)
+                    ->get();
         
         return view('components.global_form', $final);
     }

@@ -19,7 +19,8 @@ class CreateBuilder extends Command
         {--r|route= : Use to disable route generator, example: false}
         {--o|x-model= : Use to disable model, example: false}
         {--m|migration= : Use to disable migration generator, example: false}
-        {--x|x-migrate= : Use to disable auto migrate command, example: false}';
+        {--x|x-migrate= : Use to disable auto migrate command, example: false}
+        {--c|core-only= : Use to generate migration and model only, example: true}';
 
     protected $namespace = '\\App\\', $modelWithNamespace;
     protected $fields = [], $rules = [], $fExcept = [];
@@ -78,7 +79,11 @@ class CreateBuilder extends Command
         $xMigrate    = @$this->option('x-migrate') ?? 'true';
         $issetEquals = explode("=", $xMigrate);
         $xMigrate    = count($issetEquals) > 1 ? $issetEquals[1] : $xMigrate;
-        
+
+        $MMO         = @$this->option('core-only') ?? 'false';
+        $issetEquals = explode("=", $MMO);
+        $MMO         = count($issetEquals) > 1 ? $issetEquals[1] : $MMO;
+
         $fExcept     = @$this->option('except-foreign') ?? '';
         $issetEquals = explode("=", $fExcept);
         $fExcept     = count($issetEquals) > 1 ? $issetEquals[1] : $fExcept;
@@ -89,7 +94,7 @@ class CreateBuilder extends Command
         $issetEquals = explode("=", $fieldInput);
         $fieldInput  = count($issetEquals) > 1 ? $issetEquals[1] : $fieldInput;
         $fieldInput  = explode(" ", $fieldInput);
-        
+
         $fields      = [];
         $rules       = [];
         $dType       = [];
@@ -124,37 +129,41 @@ class CreateBuilder extends Command
         $this->fExcept = $fExcept;
 
         if ($migrationInput == 'true') {
-            echo "Generating Migration...";
+            echo "\nGenerating Migration...";
             $this->generateMigration($model, stringToTable($modelSnake), $dType, $xMigrate);
             echo "success";
         }
 
         if ($xModel == 'true') {
-            echo "Generating Model...";
+            echo "\nGenerating Model...";
             $this->generateModel($model, $modelDir);
             echo "success";
         }
-        echo "\nGenerating Controller...";
-        $this->generateController($model);        
-        echo "success";
-        echo "\nGenerating Filter...";
-        $this->generateFilter($model, $filterDir);
-        echo "success";
-        echo "\nGenerating Job Group...";
-        echo "\n\tImport Template";
-        $this->generateImportTemplate($model);
-        echo "\n\tImport Template OK.";
-        echo "\n\tImport Function";
-        $this->generateImportClass($model);
-        echo "\n\tImport Function OK.";
-        echo "\n\tExport Function";
-        $this->generateExportClass($model);
-        echo "\n\tExport Function OK.";
-        echo "\nsuccess";
 
-        echo "\nGenerating Route...";
-        $this->generateRoutes($model);
-        echo "success";
+        if ($MMO == 'false') {
+            echo "\nGenerating Controller...";
+            $this->generateController($model);        
+            echo "success";
+            echo "\nGenerating Filter...";
+            $this->generateFilter($model, $filterDir);
+            echo "success";
+
+            echo "\nGenerating Job Group...";
+            echo "\n\tImport Template";
+            $this->generateImportTemplate($model);
+            echo "\n\tImport Template OK.";
+            echo "\n\tImport Function";
+            $this->generateImportClass($model);
+            echo "\n\tImport Function OK.";
+            echo "\n\tExport Function";
+            $this->generateExportClass($model);
+            echo "\n\tExport Function OK.";
+            echo "\nsuccess";
+
+            echo "\nGenerating Route...";
+            $this->generateRoutes($model);
+            echo "success";
+        }
 
         echo "\nGenerate Builder success.";
     }
@@ -444,7 +453,7 @@ class CreateBuilder extends Command
         // Generate API Routes
         $my_file = base_path('routes\api.php');
         $handle  = fopen($my_file, 'a+') or die('Cannot open file:  '.$my_file);
-        $header  = "\n\nRoute::group(['prefix' => '".$modelWithNamespace::toKey()['route']."','middleware' => ['auth:api']], function() {\n";
+        $header  = "\n\nRoute::group(['prefix' => '".$modelWithNamespace::toKey()['route']."','middleware' => ['auth:api','check.token']], function() {\n";
         $footer  = "});";
         
         $route_list = '';

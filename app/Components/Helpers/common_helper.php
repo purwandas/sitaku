@@ -414,7 +414,7 @@ if(!function_exists('generateTextFilter')){
 				$function[] = $connector.
 					'public function '.$column.'($value)'."\n".
 					"\t".'{'."\n".
-					"\t\t".'return is_array($value) ? $this->builder->whereIn(\''.$tableF.'.id\', $value) : $this->builder->where(\''.$table.'.id\', $value);'."\n".
+					"\t\t".'return is_array($value) ? $this->builder->whereIn(\''.$tableF.'.id\', $value) : $this->builder->where(\''.$tableF.'.id\', $value);'."\n".
 					"\t".'}'."\n";
 	    	} else {
 	    		$function[] = $connector.
@@ -969,8 +969,8 @@ if(!function_exists('getConfigMenu')){
 		if ($type == 'separator') {
 		    $configSeparator = [];
 		    $configSeparator['role'] = "MASTER DATA";
-		    $configSeparator['sales'] = "REPORT";
-		    $configSeparator['sales-form'] = "TRANSACTION";
+		    $configSeparator['purchase'] = "REPORT";
+		    $configSeparator['purchase-form'] = "TRANSACTION";
 		    return $configSeparator;
 		}
 
@@ -984,6 +984,7 @@ if(!function_exists('getConfigMenu')){
 		    $configLabel = [];
 		    $configLabel['role'] = "Permission";
 		    $configLabel['sales-form'] = "Sales";
+		    $configLabel['purchase-form'] = "Purchase";
 		    return $configLabel;
 		}
     }

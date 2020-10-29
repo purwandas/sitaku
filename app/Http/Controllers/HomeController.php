@@ -27,7 +27,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return var_dump(get_loaded_extensions());
+        // return var_dump(get_loaded_extensions());
         $data = [
             'title' => $this->label,
             'icon'  => 'fa fa-user-md',

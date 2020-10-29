@@ -2,57 +2,56 @@
 
 namespace App\Http\Controllers;
 
-use App\Components\Filters\SalesFilter;
-use App\Components\Filters\SalesDetailFilter;
+use App\Components\Filters\PurchaseDetailFilter;
+use App\Components\Filters\PurchaseFilter;
+use App\Components\Helpers\DatatableBuilderHelper;
 use App\Components\Helpers\FormBuilderHelper;
 use App\Components\Traits\ApiController;
-use App\Exports\SalesExportPdf;
-use App\Exports\SalesExportXls;
-use App\Imports\SalesImport;
+use App\Exports\PurchaseExportPdf;
+use App\Exports\PurchaseExportXls;
+use App\Imports\PurchaseImport;
 use App\ProductUnit;
-use App\SalesDetail;
-use App\Templates\SalesImportSheetTemplate;
-use App\Unit;
+use App\Templates\PurchaseImportSheetTemplate;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Maatwebsite\Excel\Facades\Excel;
-use \App\Sales;
+use \App\Purchase;
+use \App\PurchaseDetail;
 
-class SalesController extends Controller
+class PurchaseController extends Controller
 {
     use ApiController;
 
-    public $type, $label = "Sales Report", $icon = 'fa fa-shopping-cart';
+    public $type, $label = "Purchase", $icon = 'fa fa-shopping-cart';
 
     public function index()
     {
         $data = [
             'title' => $this->label,
-            'icon'  => $this->icon,
+            'icon'  => 'fa fa-user-md',
             'breadcrumb' => [
                 ['label' => $this->label],
             ]
         ];
 
-        $form_data = new FormBuilderHelper(Sales::class,$data);
+        $form_data = new FormBuilderHelper(Purchase::class,$data);
         $final     = $form_data
                     ->setCreatable(false)
                     ->useFormBuilder(false)
                     ->setAdditionalDatatableColumns(['product'])
                     ->setOrderDatatableColumns([
-                        3 => 'product',
+                        4 => 'product',
                     ])
                     ->setDatatableColumnDefs([
-                        3 => ['class','text-center'],
-                        4 => ['class','text-right'],
+                        4 => ['class','text-center'],
                         5 => ['class','text-right'],
                         6 => ['class','text-right'],
+                        7 => ['class','text-right'],
                     ])
                     ->setDatatableButtons(['export-xls','export-pdf','job-status'])
-                    ->injectView(['inject/sales-detail'])
+                    ->injectView(['inject/sales-detail' => ['name' => 'purchase']])
                     ->get();
         
         return view('components.global_form', $final);
@@ -60,7 +59,7 @@ class SalesController extends Controller
 
     public function form($id = 0)
     {
-        $label = 'Sales';
+        $label = 'Purchase';
         $data = [
             'title' => $label,
             'icon'  => $this->icon,
@@ -162,7 +161,7 @@ class SalesController extends Controller
             'columns'  => $multipleColumn2
         ];
 
-        $form_data = new FormBuilderHelper(Sales::class,$data);
+        $form_data = new FormBuilderHelper(Purchase::class,$data);
         $final     = $form_data
                     ->setFormPage(true)
                     ->useModal(false)
@@ -175,24 +174,33 @@ class SalesController extends Controller
         return view('components.global_form', $final);
     }
 
-    public function list(SalesFilter $filter)
+    public function list(PurchaseFilter $filter)
     {
-        $sales = Sales::filter($filter)->get();
-        return $this->sendResponse($sales, 'Get Data Success!');
+        $purchase = Purchase::join('users', 'users.id', 'purchases.user_id')
+			->join('suppliers', 'suppliers.id', 'purchases.supplier_id')
+			->select('purchases.*', 'users.name as user_name', 'suppliers.name as supplier_name')
+			->filter($filter)->get();
+        return $this->sendResponse($purchase, 'Get Data Success!');
     }
 
-    public function select2(SalesFilter $filter)
+    public function select2(PurchaseFilter $filter)
     {
-        return Sales::filter($filter)->get();
+        return Purchase::join('users', 'users.id', 'purchases.user_id')
+			->join('suppliers', 'suppliers.id', 'purchases.supplier_id')
+			->select('purchases.*', 'users.name as user_name', 'suppliers.name as supplier_name')
+			->filter($filter)->get();
     }
 
-    public function datatable(SalesFilter $filter)
+    public function datatable(PurchaseFilter $filter)
     {
-        $data = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter);
+        $data = Purchase::join('users', 'users.id', 'purchases.user_id')
+			->join('suppliers', 'suppliers.id', 'purchases.supplier_id')
+			->select('purchases.*', 'users.name as user_name', 'suppliers.name as supplier_name')
+			->filter($filter);
 
         return \DataTables::of($data)
             ->editColumn('product', function($data){
-                $detail = SalesDetail::whereSalesId($data->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
+                $detail = PurchaseDetail::wherePurchaseId($data->id)->join('products','products.id','purchase_details.product_id')->select('purchase_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
                 if (count($detail)) {
                     if (count($detail) <= 1) {
                         $result = implode(', ', $detail);
@@ -212,17 +220,17 @@ class SalesController extends Controller
                 return currency_ifexist($data->total_change, 'Rp');
             })
             ->addColumn('action', function ($data){
-                $result = "<button onclick=\"editModalSales('".route('sales.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalFormSales' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>";
-                $result = "<button data-url=".route('sales.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
+                $result = "<button onclick=\"editModalPurchase('".route('purchase.edit',['id'=>$data->id])."')\" class='btn btn-sm btn-primary btn-square' data-target='#modalFormPurchase' data-toggle='modal'><i class='fas fa-pencil-alt'></i></button>";
+                $result = "<button data-url=".route('purchase.delete',['id'=>$data->id])." class='btn btn-sm btn-danger btn-square js-swal-delete'><i class='fas fa-trash-alt'></i></button>";
                 return $result;
             })
             ->rawColumns(['product','action'])
             ->make(true);
     }
 
-    public function datatableDetail(SalesDetailFilter $filter, $id)
+    public function datatableDetail(PurchaseDetailFilter $filter, $id)
     {
-        $data = SalesDetail::whereSalesId($id)->with(['product','unit'])->filter($filter);
+        $data = PurchaseDetail::wherePurchaseId($id)->with(['product','unit'])->filter($filter);
 
         return \DataTables::of($data)
             ->addColumn('product', function($data){
@@ -246,16 +254,16 @@ class SalesController extends Controller
     public function store(Request $request)
     {
         try{
-            $sales = DB::transaction(function () use ($request) {
-                $sales      = new Sales;
-                $newRequest = $request->only(['date','user_id', 'total_payment', 'total_paid', 'total_change']);
+            $purchase = DB::transaction(function () use ($request) {
+                $purchase = new Purchase;
+                $newRequest = $request->only(['date','user_id', 'supplier_id', 'total_payment', 'total_paid', 'total_change']);
                 if (!array_key_exists('user_id', $newRequest)) {
                     $newRequest['user_id'] = \Auth::user()->id;
                 }
                 $newRequest['total_payment'] = getAutoNumeric($newRequest['total_payment']);
                 $newRequest['total_paid']    = getAutoNumeric($newRequest['total_paid']);
                 $newRequest['total_change']  = getAutoNumeric($newRequest['total_change']);
-                $sales->fillAndValidate($newRequest)->save();
+                $purchase->fillAndValidate($newRequest)->save();
 
                 foreach ($request['detail'] as $key => $value) {
                     ProductUnit::updateOrCreate([
@@ -265,8 +273,8 @@ class SalesController extends Controller
                         'selling_price' => getAutoNumeric($value['unit_price'])
                     ]);
 
-                    SalesDetail::updateOrCreate([
-                        'sales_id'   => $sales->id,
+                    PurchaseDetail::updateOrCreate([
+                        'purchase_id'   => $purchase->id,
                         'product_id' => $value['product'],
                         'unit_id'    => $value['unit'],
                     ],[
@@ -275,42 +283,45 @@ class SalesController extends Controller
                         'total'      => getAutoNumeric($value['total']),
                     ]);
                 }
-                return $sales;
+                return $purchase;
             });
         }catch(\Exception $ex){
             return $this->sendError('Insert Data Error!', $ex, 500);
         }
 
-        return $this->sendResponse($sales, 'Insert Data Success!');
+        return $this->sendResponse($purchase, 'Insert Data Success!');
     }
 
     public function detail($id)
     {
-        $sales = Sales::findOrFail($id);
-        return $this->sendResponse($sales, 'Get Data Success!');
+        $purchase = Purchase::join('users', 'users.id', 'purchases.user_id')
+			->join('suppliers', 'suppliers.id', 'purchases.supplier_id')
+			->select('purchases.*', 'users.name as user_name', 'suppliers.name as supplier_name')
+			->findOrFail($id);
+        return $this->sendResponse($purchase, 'Get Data Success!');
     }
 
     public function update(Request $request, $id)
     {
         try{
-            $sales = DB::transaction(function () use ($request, $id) {
-                $sales = Sales::findOrFail($id);
-                $sales->fillAndValidate()->save();
-                return $sales;
+            $purchase = DB::transaction(function () use ($request, $id) {
+                $purchase = Purchase::findOrFail($id);
+                $purchase->fillAndValidate()->save();
+                return $purchase;
             });
         }catch(\Exception $ex){
             return $this->sendError('Update Data Error!', $ex, 500);
         }
 
-        return $this->sendResponse($sales, 'Update Data Success!');
+        return $this->sendResponse($purchase, 'Update Data Success!');
     }
 
     public function destroy($id)
     {
         try{
             DB::transaction(function () use ($id) {
-                $sales = Sales::findOrFail($id);
-                $sales->delete();
+                $purchase = Purchase::findOrFail($id);
+                $purchase->delete();
             });
         }catch(\Exception $ex){
             return $this->sendError('Delete Data Error!', $ex, 500);
@@ -324,9 +335,9 @@ class SalesController extends Controller
         processing_jobs([
             'title'   => 'Download '.$this->label,
             'filters' => $request->all(),
-            'model'   => SalesExportXls::class,
+            'model'   => PurchaseExportXls::class,
             'module'  => $this->label,
-            'path'    => 'exports/sales/xlsx',
+            'path'    => 'exports/purchase/xlsx',
             'ext'     => 'xlsx',
         ]);
         
@@ -339,9 +350,9 @@ class SalesController extends Controller
         processing_jobs([
             'title'   => 'Download '.$this->label,
             'filters' => $request->all(),
-            'model'   => SalesExportPdf::class,
+            'model'   => PurchaseExportPdf::class,
             'module'  => $this->label,
-            'path'    => 'exports/sales/pdf',
+            'path'    => 'exports/purchase/pdf',
         ]);
         
         return $this->sendResponse([], 'Download '.$this->label.' has been processed.');
@@ -351,9 +362,9 @@ class SalesController extends Controller
     {
         processing_jobs([
             'title'  => 'Upload '.$this->label,
-            'model'  => SalesImport::class,
+            'model'  => PurchaseImport::class,
             'module' => $this->label,
-            'path'   => 'imports/sales',
+            'path'   => 'imports/purchase',
         ]);
         
         return $this->sendResponse([], 'Upload '.$this->label.' has been processed.');
@@ -361,6 +372,6 @@ class SalesController extends Controller
 
     public function importTemplate()
     {
-        return Excel::download(new SalesImportSheetTemplate, 'Template For Import '.$this->label.' Data.xlsx');
+        return Excel::download(new PurchaseImportSheetTemplate, 'Template For Import '.$this->label.' Data.xlsx');
     }
 }

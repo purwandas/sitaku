@@ -26,7 +26,7 @@ class SalesFilter extends QueryFilters
 
 	public function supplier_id($value)
 	{
-		return is_array($value) ? $this->builder->whereIn('suppliers.id', $value) : $this->builder->where('sales.id', $value);
+		return is_array($value) ? $this->builder->whereIn('suppliers.id', $value) : $this->builder->where('suppliers.id', $value);
 	}
 
 }
