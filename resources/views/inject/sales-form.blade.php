@@ -64,7 +64,7 @@ $multipleTable = 'tbl_multiple_detail';
 		(async function() {
 			sellingPrice = await getPrice(product.val(), unit.val());
 			if ($.isNumeric(sellingPrice))
-			price.val(sellingPrice);
+			price.autoNumeric('set',sellingPrice);
 		})();
 	});
 
