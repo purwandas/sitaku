@@ -77,14 +77,14 @@ class FormBuilderHelper
 			'setupFilterBuilder'    => [],
 			'setupFormBuilder'      => [],
 			'setupDatatableBuilder' => [
-	        	'useDatatableAction' => true,
-	        	'formPage' => false,
-	        	'creatable' => true,
-	        	'editable' => true,
-	        	'deletable' => true,
-	        	'lengthMenu' => [[10, 25, 50, 100], [10, 25, 50, 100]],
-	        	'fixedColumns' => ['leftColumns' => '0', 'heightMatch' => 'none'],
-	        	'order' => [[1, 'DESC']],
+				'useDatatableAction' => true,
+				'formPage'           => false,
+				'creatable'          => true,
+				'editable'           => true,
+				'deletable'          => true,
+				'lengthMenu'         => [[10, 25, 50, 100], [10, 25, 50, 100]],
+				'fixedColumns'       => ['leftColumns' => '0', 'heightMatch' => 'none'],
+				'order'              => [[1, 'DESC']],
 	        ],
 			'customVariables' => [],
 			'injectView'      => [],
@@ -112,6 +112,15 @@ class FormBuilderHelper
 	    // ->injectView(['inject/form_berkas_penilaian'=>['realisasi_id' => $realisasiId]])
 		$config = $this->getGlobalConfig();
 		$config['injectView'] = $array;
+		$this->config = $config;
+		return $this->getRecentArray();
+	}
+
+	public function includeView($array = [])
+	{
+	    // ->includeView(['inject/form_berkas_penilaian'=>['realisasi_id' => $realisasiId]])
+		$config = $this->getGlobalConfig();
+		$config['includeView'] = $array;
 		$this->config = $config;
 		return $this->getRecentArray();
 	}

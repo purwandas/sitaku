@@ -453,7 +453,7 @@ class CreateBuilder extends Command
         // Generate API Routes
         $my_file = base_path('routes\api.php');
         $handle  = fopen($my_file, 'a+') or die('Cannot open file:  '.$my_file);
-        $header  = "\n\nRoute::group(['prefix' => '".$modelWithNamespace::toKey()['route']."','middleware' => ['auth:api','check.token']], function() {\n";
+        $header  = "\n\nRoute::group(['prefix' => '".$modelWithNamespace::toKey()['route']."','middleware' => ['auth:api']], function() {\n";
         $footer  = "});";
         
         $route_list = '';

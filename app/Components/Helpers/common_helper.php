@@ -524,7 +524,14 @@ if(!function_exists('ruleToMigrationColumn')){
 	    	$tmp = "";
 	    	$tmp .= '$table';
 
-	    	if (in_array("date", $rules)) {
+	    	if (!empty($dType)) {
+	    		if (Str::contains($dType, '(')) {
+	    			$dTtmp = explode('(', $dType);
+	    			$tmp   .= "->".$dTtmp[0]."('".$column."',".(Str::replaceLast(')', '', $dTtmp[1])).")";
+	    		} else
+				$tmp   .= "->".$dType."('".$column."')";
+	    		$type ++;
+	    	} elseif (in_array("date", $rules)) {
 	    		$tmp .= "->date('".$column."')";
 	    		$type ++;
 	    	} elseif (in_array("datetime", $rules)) {
@@ -536,8 +543,7 @@ if(!function_exists('ruleToMigrationColumn')){
 	    	}
 
 	    	if ($type == 0) {
-				$dType = empty($dType) ? 'string' : $dType;
-				$tmp   .= "->".$dType."('".$column."')";
+				$tmp .= "->string('".$column."')";
 	    	}
 	    	$columns[] = $tmp.$nullable;
 	    }

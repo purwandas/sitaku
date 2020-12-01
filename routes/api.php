@@ -167,3 +167,16 @@ Route::group(['prefix' => 'purchase','middleware' => ['auth:api']], function() {
 	Route::post('import', 'PurchaseController@import')->name('purchase.import');
 	Route::post('select2', 'PurchaseController@select2')->name('purchase.select2');
 });
+
+Route::group(['prefix' => 'trend-moment','middleware' => ['auth:api']], function() {
+	Route::get('', 'TrendMomentController@list')->name('trend-moment.list');
+	Route::post('', 'TrendMomentController@store')->name('trend-moment.create');
+	Route::get('{id}', 'TrendMomentController@detail')->name('trend-moment.detail')->where('id', '[0-9]+');
+	Route::put('{id}', 'TrendMomentController@update')->name('trend-moment.edit')->where('id', '[0-9]+');
+	Route::delete('{id}', 'TrendMomentController@destroy')->name('trend-moment.delete')->where('id', '[0-9]+');
+	Route::post('datatable', 'TrendMomentController@datatable')->name('trend-moment.datatable');
+	Route::post('export-xls', 'TrendMomentController@exportXls')->name('trend-moment.export-xls');
+	Route::post('export-pdf', 'TrendMomentController@exportPdf')->name('trend-moment.export-pdf');
+	Route::post('import', 'TrendMomentController@import')->name('trend-moment.import');
+	Route::post('select2', 'TrendMomentController@select2')->name('trend-moment.select2');
+});

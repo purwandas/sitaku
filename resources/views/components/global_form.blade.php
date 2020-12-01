@@ -20,21 +20,39 @@
 @stop
 
 @section('content')
-<div class="card">
-	<div class="card-body">
-		{{-- <h4 class="mt-0 header-title">Create User</h4> --}}
-		{{-- @include('components.datatable_builder',['name' => 'user_table']) --}}
-		@if(isset($setupFilterBuilder))
-			@include('components.filter_builder',$setupFilterBuilder)
+	@if(isset($includeView))
+		@if(is_array($includeView))
+			@if(count($includeView) > 0)
+				@foreach($includeView as $key => $value)
+					@if(is_numeric($key))
+						@include($value)
+					@else
+						@include($key,$value)
+					@endif
+				@endforeach
+			@endif
+		@else
+			@include($includeView)
 		@endif
-		@if(isset($setupFormBuilder))
-			@include('components.form_builder',$setupFormBuilder)
-		@endif
-		@if(isset($setupDatatableBuilder))
-			@include('components.datatable_builder',$setupDatatableBuilder)
-		@endif
-	</div>
-</div>
+	@endif
+
+	@if(isset($setupFilterBuilder) || isset($setupFormBuilder) || isset($setupDatatableBuilder))
+		<div class="card">
+			<div class="card-body">
+				{{-- <h4 class="mt-0 header-title">Create User</h4> --}}
+				{{-- @include('components.datatable_builder',['name' => 'user_table']) --}}
+				@if(isset($setupFilterBuilder))
+					@include('components.filter_builder',$setupFilterBuilder)
+				@endif
+				@if(isset($setupFormBuilder))
+					@include('components.form_builder',$setupFormBuilder)
+				@endif
+				@if(isset($setupDatatableBuilder))
+					@include('components.datatable_builder',$setupDatatableBuilder)
+				@endif
+			</div>
+		</div>
+	@endif
 @endsection
 
 @push('inject-view')

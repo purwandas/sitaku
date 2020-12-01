@@ -77,3 +77,9 @@ Route::group(['prefix' => 'product-unit','middleware' => ['auth']], function() {
 	Route::get('import-template', 'ProductUnitController@importTemplate')->name('product-unit.import-template');
 });
 
+
+Route::group(['prefix' => 'trend-moment','middleware' => ['auth']], function() {
+	Route::get('', 'TrendMomentController@index')->name('trend-moment.index');
+	Route::get('/calc', 'TrendMomentController@calculation')->name('trend-moment.calc');
+	Route::get('import-template', 'TrendMomentController@importTemplate')->name('trend-moment.import-template');
+});
