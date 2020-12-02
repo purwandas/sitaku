@@ -46,10 +46,19 @@ class TrendMomentController extends Controller
     {
         // TEST SELECTED MONTH
         $request['month'] = 1;
+        // TEST SELECTED PRODUCT
+        $request['product'] = null;
 
-        $trendData  = TrendMoment::orderByDesc('id')->limit(12)->get();
-        $data       = $trendData->sortBy('id');
-        $dataResult = [];
+        $trendData  = TrendMoment::
+            when( @$request['product'], function($q){
+                $q->whereProductId($request['product']);
+            })
+            ->orderByDesc('id')
+            ->limit(12)
+            ->get();
+        
+        $data        = $trendData->sortBy('id');
+        $dataResult  = [];
         $sigX        = 0;
         $sigY        = 0;
         $sigXY       = 0;
@@ -61,12 +70,12 @@ class TrendMomentController extends Controller
             $x = $idx;
             $y = $value->total_sales;
 
-            $dataResult[$idx]        = $value;
-            $dataResult[$idx]['x']   = $x;
-            $dataResult[$idx]['y']   = $y;
-            $dataResult[$idx]['xy']  = ($x * $y);
-            $dataResult[$idx]['xx']  = ($x * $x);
-            $dataResult[$idx]['month']  = TrendMoment::monthArray()[$value->month_];
+            $dataResult[$idx]          = $value;
+            $dataResult[$idx]['x']     = $x;
+            $dataResult[$idx]['y']     = $y;
+            $dataResult[$idx]['xy']    = ($x * $y);
+            $dataResult[$idx]['xx']    = ($x * $x);
+            $dataResult[$idx]['month'] = TrendMoment::monthArray()[$value->month_];
 
             if ($request['month'] == $value->month_) {
                 $seasonIndex = $y;

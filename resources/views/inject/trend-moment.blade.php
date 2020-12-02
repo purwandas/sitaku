@@ -1,4 +1,39 @@
 <div class="row">
+
+	<div class="col-md-6">
+		<div class="card">
+			<div class="card-header text-center">
+				<strong>Prediction</strong>
+			</div>
+			<div class="card-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Period</th>
+							<th>Prediction</th>
+							<th>By Trend Moment</th>
+						</tr>
+					</thead>
+					<tbody>
+						@php
+							$n = $customVariables['n'];
+							foreach ($customVariables['next'] as $key => $value) {
+								echo "
+									<tr>
+										<td class='number'>". $value['idx'] ."</td>
+										<td class='number'>". $value['prediction'] ."</td>
+										<td class='number'>". $value['trend'] ."</td>
+									</tr>
+								";
+								$n++;
+							}
+						@endphp
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
 	<div class="col-md-6">
 		<div class="card">
 			<div class="card-header text-center">
@@ -64,7 +99,7 @@
 						<th class="text-center">ΣY = n.a + b.ΣX</th>
 					</tr>
 					<tr>
-						<td class="text-center">ΣY = n.a + b.ΣX</td>
+						<td class="text-center"> <span class="calc-sig-y">ΣY</span> = <span class="calc-">n</span>.a + b.<span class="calc-sig-x">ΣX</span></td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
@@ -73,52 +108,20 @@
 						<th class="text-center">ΣXY = a.ΣX + b.ΣX²</th>
 					</tr>
 					<tr>
-						<td class="text-center">ΣXY = a.ΣX + b.ΣX²</td>
+						<td class="text-center"><span class="calc-sig-x-y">ΣXY</span> = a.<span class="calc-sig-x">ΣX</span> + b. <span class="calc-sig-x-square">ΣX²</span></td>
 					</tr>
 					<tr>
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<th class="text-center">a = ?</th>
+						<th class="text-center">a = <span class="calc-a">?</span></th>
 					</tr>
 					<tr>
-						<th class="text-center">b = ?</th>
+						<th class="text-center">b = <span class="calc-b">?</span></th>
 					</tr>
 				</table>
 			</div>
 		</div>
 	</div>
 
-	<div class="col-md-6">
-		<div class="card">
-			<div class="card-header text-center">
-				<strong>Prediction</strong>
-			</div>
-			<div class="card-body">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Period</th>
-							<th>Prediction</th>
-							<th>By Trend Moment</th>
-						</tr>
-					</thead>
-					<tbody>
-						@php
-							foreach ($customVariables['next'] as $key => $value) {
-								echo "
-									<tr>
-										<td class='number'>". $value['idx'] ."</td>
-										<td class='number'>". $value['prediction'] ."</td>
-										<td class='number'>". $value['trend'] ."</td>
-									</tr>
-								";
-								$i++;
-							}
-						@endphp
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
 </div>

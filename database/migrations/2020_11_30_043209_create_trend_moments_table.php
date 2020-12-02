@@ -16,10 +16,14 @@ class CreateTrendMomentsTable extends Migration
         if(!Schema::hasTable('trend_moments')){
             Schema::create('trend_moments', function (Blueprint $table) {
                 $table->bigIncrements('id');
+
                 $table->tinyInteger('month_')->required();
 				$table->smallInteger('year_')->required();
 				$table->integer('total_sales')->required();
 
+                $table->unsignedBigInteger('product_id')->nullable();
+                $table->foreign('product_id')->references('id')->on('products');
+                
                 $table->timestamps();
                 $table->softDeletes();
             });

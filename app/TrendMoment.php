@@ -17,6 +17,7 @@ class TrendMoment extends BaseModel
             'month_' => 'numeric',
 			'year_' => 'numeric',
 			'total_sales' => 'numeric',
+            'product_id' => 'exists:products,id',
 
         ];
     
