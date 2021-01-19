@@ -15,7 +15,7 @@ class UserSeeder extends Seeder
     {
         DB::table('roles')->insert([
             ['name' => 'Admin','created_at' => Carbon::now(),'updated_at' => Carbon::now()],
-            ['name' => 'Guest','created_at' => Carbon::now(),'updated_at' => Carbon::now()],
+            ['name' => 'Cashier','created_at' => Carbon::now(),'updated_at' => Carbon::now()],
         ]);
 
         User::updateOrCreate([

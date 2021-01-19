@@ -1,94 +1,27 @@
 <div class="row">
 
-	<div class="col-md-6">
+	<div id="formDiv" class="col-md-6">
 		<div class="card">
 			<div class="card-header text-center">
-				<strong>Prediction</strong>
+				<strong>Selection</strong>
 			</div>
 			<div class="card-body">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Period</th>
-							<th>Prediction</th>
-							<th>By Trend Moment</th>
-						</tr>
-					</thead>
-					<tbody>
-						@php
-							$n = $customVariables['n'];
-							foreach ($customVariables['next'] as $key => $value) {
-								echo "
-									<tr>
-										<td class='number'>". $value['idx'] ."</td>
-										<td class='number'>". $value['prediction'] ."</td>
-										<td class='number'>". $value['trend'] ."</td>
-									</tr>
-								";
-								$n++;
-							}
-						@endphp
-					</tbody>
-				</table>
+				<form id="formTrend" method="get" action="{{ route('trend-moment.go') }}">
+					{{
+						Form::select2Input('product', $customVariables['product'] ?? old($key), 'product.select2', ['elOptions' => ['required' => 'required']]) 
+					}}
+
+					{{
+						Form::selectInput('month', $customVariables['month'] ?? old($key), \App\TrendMoment::monthArray(), ['elOptions' => ['required' => 'required']]) 
+					}}
+
+					<input id="submitTrend" type="submit" value="Submit" class="btn btn-sm btn-primary float-right mr-3">
+				</form>
 			</div>
 		</div>
 	</div>
 
-	<div class="col-md-6">
-		<div class="card">
-			<div class="card-header text-center">
-				<strong>Sales Data</strong>
-			</div>
-			<div class="card-body">
-				<table class="table table-striped">
-					<thead>
-						<tr>
-							<th>Month</th>
-							<th>Sales (Y)</th>
-							<th>Time (X)</th>
-							<th>(XY)</th>
-							<th>(X²)</th>
-						</tr>
-					</thead>
-					<tbody>
-						@php
-							$i = 0;
-							foreach ($customVariables['sales'] as $key => $value) {
-								echo "
-									<tr>
-										<td>". $value['month'] ."</td>
-										<td class='number'>". $value['y'] ."</td>
-										<td class='number'>". $value['x'] ."</td>
-										<td class='number'>". $value['xy'] ."</td>
-										<td class='number'>". $value['xx'] ."</td>
-									</tr>
-								";
-								$i++;
-							}
-							echo "
-								<tr>
-									<th>Total</th>
-									<th class='number'>". $customVariables['sigY'] ."</th>
-									<th class='number'>". $customVariables['sigX'] ."</th>
-									<th class='number'>". $customVariables['sigXY'] ."</th>
-									<th class='number'>". $customVariables['sigXSquare'] ."</th>
-								</tr>
-								<tr>
-									<th>Average</th>
-									<th>". $customVariables['avg'] ."</th>
-									<th></th>
-									<th></th>
-									<th></th>
-								</tr>
-							";
-						@endphp
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-
-	<div class="col-md-6">
+	<div id="formulaDiv" class="col-md-6">
 		<div class="card">
 			<div class="card-header text-center">
 				<strong>Calculation</strong>
@@ -124,4 +57,119 @@
 		</div>
 	</div>
 
+	<div id="errorDiv" class="col-md-12">
+		<div class="card">
+			<div class="card-header text-center">
+				<strong>Data not found</strong>
+			</div>
+			<div class="card-body text-center">
+				{{ @$customVariables['message'] }}
+			</div>
+		</div>
+	</div>
+
+
+	<div id="predictionDiv" class="col-md-6">
+		<div class="card">
+			<div class="card-header text-center">
+				<strong>Prediction</strong>
+			</div>
+			<div class="card-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Period</th>
+							<th>Prediction</th>
+							<th>By Trend Moment</th>
+						</tr>
+					</thead>
+					<tbody>
+						@php
+							// $n = @$customVariables['n'];
+							// foreach (@$customVariables['next'] as $key => $value) {
+							// 	echo "
+							// 		<tr>
+							// 			<td class='number'>". $value['idx'] ."</td>
+							// 			<td class='number'>". $value['prediction'] ."</td>
+							// 			<td class='number'>". $value['trend'] ."</td>
+							// 		</tr>
+							// 	";
+							// 	$n++;
+							// }
+						@endphp
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div id="dataDiv" class="col-md-6">
+		<div class="card">
+			<div class="card-header text-center">
+				<strong>Sales Data</strong>
+			</div>
+			<div class="card-body">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Month</th>
+							<th>Sales (Y)</th>
+							<th>Time (X)</th>
+							<th>(XY)</th>
+							<th>(X²)</th>
+						</tr>
+					</thead>
+					<tbody>
+						@php
+							// $i = 0;
+							// foreach (@$customVariables['sales'] as $key => $value) {
+							// 	echo "
+							// 		<tr>
+							// 			<td>". $value['month'] ."</td>
+							// 			<td class='number'>". $value['y'] ."</td>
+							// 			<td class='number'>". $value['x'] ."</td>
+							// 			<td class='number'>". $value['xy'] ."</td>
+							// 			<td class='number'>". $value['xx'] ."</td>
+							// 		</tr>
+							// 	";
+							// 	$i++;
+							// }
+							// echo "
+							// 	<tr>
+							// 		<th>Total</th>
+							// 		<th class='number'>". $customVariables['sigY'] ."</th>
+							// 		<th class='number'>". $customVariables['sigX'] ."</th>
+							// 		<th class='number'>". $customVariables['sigXY'] ."</th>
+							// 		<th class='number'>". $customVariables['sigXSquare'] ."</th>
+							// 	</tr>
+							// 	<tr>
+							// 		<th>Average</th>
+							// 		<th>". $customVariables['avg'] ."</th>
+							// 		<th></th>
+							// 		<th></th>
+							// 		<th></th>
+							// 	</tr>
+							// ";
+						@endphp
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+
 </div>
+
+@push('additional-js')
+<script type="text/javascript">
+	$('#formTrend').submit(function(event) {
+        event.preventDefault();
+        $('#submitTrend').prop('disabled',true);
+
+		var url      = $('#formTrend').attr('action');
+
+		window.location.replace("{{ route('trend-moment.go') }}/" + $('#select2-product').val() + '/' + $('#month').val());
+
+    });
+</script>
+@endpush

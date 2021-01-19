@@ -9,11 +9,12 @@ use App\Components\Traits\ApiController;
 use App\Exports\TrendMomentExportPdf;
 use App\Exports\TrendMomentExportXls;
 use App\Imports\TrendMomentImport;
+use App\Product;
 use App\Templates\TrendMomentImportSheetTemplate;
-use \App\TrendMoment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
+use \App\TrendMoment;
 
 class TrendMomentController extends Controller
 {
@@ -21,7 +22,7 @@ class TrendMomentController extends Controller
 
     public $type, $label = "Trend Moment";
 
-    public function index(Request $request)
+    public function index(Request $request, $product = '', $month = '')
     {
         $data = [
             'title' => $this->label,
@@ -32,26 +33,27 @@ class TrendMomentController extends Controller
         ];
 
         $form_data = new FormBuilderHelper(TrendMoment::class,$data);
+        $calculation = !empty($product) ? $this->calculation($product, $month) : [];
         $final     = $form_data
             ->useFormBuilder(false)
             ->useDatatable(false)
-            ->setCustomVariables($this->calculation($request))
+            ->setCustomVariables($calculation)
             ->includeView(['inject/trend-moment'])
             ->get();
         
         return view('components.global_form', $final);
     }
 
-    public function calculation(Request $request)
+    public function calculation($product, $month)
     {
         // TEST SELECTED MONTH
-        $request['month'] = 1;
+        $month = 1;
         // TEST SELECTED PRODUCT
-        $request['product'] = null;
+        $product = null;
 
-        $trendData  = TrendMoment::
-            when( @$request['product'], function($q){
-                $q->whereProductId($request['product']);
+        return $trendData  = TrendMoment::
+            when( @$product, function($q) use ($product){
+                $q->whereProductId($product);
             })
             ->orderByDesc('id')
             ->limit(12)
@@ -77,7 +79,7 @@ class TrendMomentController extends Controller
             $dataResult[$idx]['xx']    = ($x * $x);
             $dataResult[$idx]['month'] = TrendMoment::monthArray()[$value->month_];
 
-            if ($request['month'] == $value->month_) {
+            if ($month == $value->month_) {
                 $seasonIndex = $y;
             }
 
@@ -87,6 +89,16 @@ class TrendMomentController extends Controller
             $sigXSquare += ($x * $x);
 
             $idx ++;
+        }
+
+        $productName = Product::findOrFail($product)->name;
+
+        if ($idx == 0) {
+            return [
+                'message' => 'No Data Found',
+                'product' => [$product, $productName],
+                'month'   => $month,
+            ];
         }
 
         $avg = $sigY / ($idx);
@@ -131,7 +143,9 @@ class TrendMomentController extends Controller
             'avg'         => $avg,
             'Y'           => $y,
             'ySeason'     => $seasonY,
-            'next'        => $next
+            'next'        => $next,
+            'product'     => [$product, $productName],
+            'month'       => $month,
         ];
     }
 

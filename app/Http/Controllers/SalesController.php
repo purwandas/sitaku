@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Components\Filters\SalesFilter;
 use App\Components\Filters\SalesDetailFilter;
+use App\Components\Filters\SalesFilter;
 use App\Components\Helpers\FormBuilderHelper;
 use App\Components\Traits\ApiController;
 use App\Exports\SalesExportPdf;
@@ -12,6 +12,7 @@ use App\Imports\SalesImport;
 use App\ProductUnit;
 use App\SalesDetail;
 use App\Templates\SalesImportSheetTemplate;
+use App\TrendMoment;
 use App\Unit;
 use App\User;
 use Carbon\Carbon;
@@ -274,6 +275,17 @@ class SalesController extends Controller
                         'qty'        => getAutoNumeric($value['unit_qty']),
                         'total'      => getAutoNumeric($value['total']),
                     ]);
+
+                    $now = Carbon::now();
+
+                    $trend = TrendMoment::firstOrCreate([
+                        'product_id' => $value['product'],
+                        'month_'     => $now->month,
+                        'year_'      => $now->year,
+                    ]);
+
+                    $trend->total_sales = $trend->total_sales + $value['unit_qty'];
+
                 }
                 return $sales;
             });

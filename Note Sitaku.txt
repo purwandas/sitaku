@@ -1,0 +1,29 @@
+1. Menu Permission dan User: 
+- export-import, status queue, filter dihidden
+
+2. Conversion di produc Unit sama harga beli harga jual
+
+3. Di purchases details blum ada product details
+
+4. saat pembeliaan product data stock product tdk terupdate 
+
+5. dibagian pembelian barang belum fix
+
+6. Dibagian filter belum fix for all menu
+
+7. Membuat form inputan untuk metode trend moment datanya narik dari data penjualan, inputany tgl/periode, product dan total produk terjual otomatis terdeteksi totalnya berapa dr hasil penjualan dan data product
+
+--------------------------------------------------------------
+
+====================================
+#Dashboard Home :
+====================================
+- Total Produk
+- Total Stok Produk
+- Total Supplier
+- Total Pemasukan perhari
+- Total Pemasukan keseluruhan
+- Date 
+- Jam
+- Status Login
+- Grafik Penjualan

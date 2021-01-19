@@ -976,7 +976,7 @@ if(!function_exists('getConfigMenu')){
 		    $configSeparator = [];
 		    $configSeparator['role'] = "MASTER DATA";
 		    $configSeparator['purchase'] = "REPORT";
-		    $configSeparator['purchase-form'] = "TRANSACTION";
+		    $configSeparator['purchase-form'] = "TRANSACTION DETAIL";
 		    return $configSeparator;
 		}
 
