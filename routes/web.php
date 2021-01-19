@@ -22,6 +22,10 @@ Route::get('/', function() {
     return view('home');
 })->middleware('auth');
 
+Route::group(['prefix' => 'dashboard','middleware' => ['auth']], function() {
+	Route::get('data', 'DashboardController@getdata')->name('dashboard.data');
+});
+
 Route::get('/available-input', 'HomeController@index')->name('available-input.index');
 
 Route::get('purchase-form/{id?}', 'PurchaseController@form')->name('purchase-form.index');

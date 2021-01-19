@@ -358,7 +358,7 @@ $classRow      = ['class'=>'row'];
             error: function(xhr, textStatus, errorThrown){
                 swal({
                 	title: "Gagal melakukan request",
-                	text: "Silahkan hubungi admin",
+                	text: xhr.responseJSON.msg ?? "Silahkan hubungi admin",
                 	type: "error"
                 });
             }

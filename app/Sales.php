@@ -29,6 +29,11 @@ class Sales extends BaseModel
 		return $this->belongsTo($this->_user(), 'user_id');
 	}
 
+	public function sales_details()
+	{
+		return $this->hasMany(SalesDetail::class);
+	}
+
 	public static function _user()
 	{
 		return '\\App\User';

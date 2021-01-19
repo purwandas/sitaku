@@ -9,6 +9,7 @@ use App\Components\Traits\ApiController;
 use App\Exports\SalesExportPdf;
 use App\Exports\SalesExportXls;
 use App\Imports\SalesImport;
+use App\Product;
 use App\ProductUnit;
 use App\SalesDetail;
 use App\Templates\SalesImportSheetTemplate;
@@ -278,22 +279,59 @@ class SalesController extends Controller
 
                     $now = Carbon::now();
 
-                    $trend = TrendMoment::firstOrCreate([
-                        'product_id' => $value['product'],
-                        'month_'     => $now->month,
-                        'year_'      => $now->year,
-                    ]);
+                    $trend = TrendMoment::where('product_id',$value['product'])
+                                        ->where('month_',$now->month)
+                                        ->where('year_',$now->year)
+                                        ->first();
 
-                    $trend->total_sales = $trend->total_sales + $value['unit_qty'];
+                    if(!$trend){
+                        $trend = new TrendMoment;
+                        $trend->product_id = $value['product'];
+                        $trend->month_ = $now->month;
+                        $trend->year_ = $now->year;
+                        $trend->total_sales = $value['unit_qty'];
+                        $trend->save();
+                    }else{
+                        $trend->total_sales = $trend->total_sales + $value['unit_qty'];
+                        $trend->save();
+                    }
 
+                    // $trend = TrendMoment::firstOrCreate([
+                    //     'product_id' => $value['product'],
+                    //     'month_'     => $now->month,
+                    //     'year_'      => $now->year,
+                    // ]);
+
+                    // $trend->total_sales = $trend->total_sales + $value['unit_qty'];
+
+                    // Ngurangin Stock
+                    $product = Product::findOrFail($value['product']);
+                    if($value['unit_qty'] <= $product->stock){
+                        $product->stock = $product->stock - $value['unit_qty'];
+                        $product->save();
+                    }else{
+                        DB::rollback();
+                        return [
+                            'status' => false,
+                            'data' => $product->name,
+                        ];
+                    }
                 }
-                return $sales;
+
+                return [
+                    'status' => true,
+                    'data' => $sales,
+                ];
             });
         }catch(\Exception $ex){
             return $this->sendError('Insert Data Error!', $ex, 500);
         }
 
-        return $this->sendResponse($sales, 'Insert Data Success!');
+        if($sales['status'] == false){
+            return $this->sendError('Insert Data Error!', 'Insufficient stock for: '.$sales['data'], 500);
+        }
+        
+        return $this->sendResponse($sales['data'], 'Insert Data Success!');
     }
 
     public function detail($id)
@@ -322,6 +360,14 @@ class SalesController extends Controller
         try{
             DB::transaction(function () use ($id) {
                 $sales = Sales::findOrFail($id);
+                // Balikin Stock
+                foreach ($sales->sales_details as $detail) {
+                    $product = Product::findOrFail($detail->product_id);
+                    $product->stock = $product->stock + $detail->qty;
+                    $product->save();
+                }
+
+                $sales->sales_details()->delete();
                 $sales->delete();
             });
         }catch(\Exception $ex){
