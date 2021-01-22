@@ -25,6 +25,12 @@
             @php
                 $camel = Str::camel($menu['label']);
 
+                var_dump($menu);
+
+                if (($menu['key'] == 'role' || $menu['key'] == 'user') && (\Auth::user()->role_id == 2)) {
+                    continue;
+                }
+
                 if ( count($configIcon) > 0 && array_key_exists($camel, $configIcon) ) {
                     $icon = $configIcon[$camel];
                 } else {

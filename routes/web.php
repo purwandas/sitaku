@@ -50,16 +50,6 @@ Route::group(['middleware' => ['auth']],function(){
 		Route::get('import-template', 'TrendMomentController@importTemplate')->name('trend-moment.import-template');
 	});
 
-	Route::group(['prefix' => 'role','middleware' => ['auth']], function() {
-		Route::get('', 'RoleController@index')->name('role.index');
-		Route::get('import-template', 'RoleController@importTemplate')->name('role.import-template');
-	});
-
-	Route::group(['prefix' => 'user','middleware' => ['auth']], function() {
-		Route::get('', 'UserController@index')->name('user.index');
-		Route::get('import-template', 'UserController@importTemplate')->name('user.import-template');
-	});
-
 	Route::group(['prefix' => 'category','middleware' => ['auth']], function() {
 		Route::get('', 'CategoryController@index')->name('category.index');
 		Route::get('import-template', 'CategoryController@importTemplate')->name('category.import-template');
@@ -88,6 +78,17 @@ Route::group(['middleware' => ['auth']],function(){
 	Route::group(['prefix' => 'product-unit','middleware' => ['auth']], function() {
 		Route::get('', 'ProductUnitController@index')->name('product-unit.index');
 		Route::get('import-template', 'ProductUnitController@importTemplate')->name('product-unit.import-template');
+	});
+
+
+	Route::group(['prefix' => 'user','middleware' => ['auth']], function() {
+		Route::get('', 'UserController@index')->name('user.index');
+		Route::get('import-template', 'UserController@importTemplate')->name('user.import-template');
+	});
+	
+	Route::group(['prefix' => 'role','middleware' => ['auth']], function() {
+		Route::get('', 'RoleController@index')->name('role.index');
+		Route::get('import-template', 'RoleController@importTemplate')->name('role.import-template');
 	});
 
 });
