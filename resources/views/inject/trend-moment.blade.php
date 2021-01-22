@@ -57,7 +57,7 @@
 		</div>
 	</div>
 
-	@if( ! array_key_exists('n', @$customVariables ?? []) )
+	@if( ! array_key_exists('n', @$customVariables ?? [])  && \Request::is('trend-moment/go*'))
 	<div id="errorDiv" class="col-md-12">
 		<div class="card">
 			<div class="card-header text-center">
