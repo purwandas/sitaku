@@ -45,6 +45,7 @@ Route::group(['middleware' => ['auth']],function(){
 
 	Route::group(['prefix' => 'trend-moment','middleware' => ['auth']], function() {
 		Route::get('/', 'TrendMomentController@index')->name('trend-moment.index');
+		Route::get('/go/{product?}/{month?}', 'TrendMomentController@index')->name('trend-moment.go');
 		Route::get('/calc', 'TrendMomentController@calculation')->name('trend-moment.calc');
 		Route::get('import-template', 'TrendMomentController@importTemplate')->name('trend-moment.import-template');
 	});

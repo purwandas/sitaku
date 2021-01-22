@@ -57,6 +57,7 @@
 		</div>
 	</div>
 
+	@if( ! array_key_exists('n', @$customVariables ?? []) )
 	<div id="errorDiv" class="col-md-12">
 		<div class="card">
 			<div class="card-header text-center">
@@ -67,8 +68,9 @@
 			</div>
 		</div>
 	</div>
+	@endif
 
-
+	@if( array_key_exists('n', @$customVariables ?? []) )
 	<div id="predictionDiv" class="col-md-6">
 		<div class="card">
 			<div class="card-header text-center">
@@ -85,17 +87,17 @@
 					</thead>
 					<tbody>
 						@php
-							// $n = @$customVariables['n'];
-							// foreach (@$customVariables['next'] as $key => $value) {
-							// 	echo "
-							// 		<tr>
-							// 			<td class='number'>". $value['idx'] ."</td>
-							// 			<td class='number'>". $value['prediction'] ."</td>
-							// 			<td class='number'>". $value['trend'] ."</td>
-							// 		</tr>
-							// 	";
-							// 	$n++;
-							// }
+							$n = @$customVariables['n'];
+							foreach (@$customVariables['next'] as $key => $value) {
+								echo "
+									<tr>
+										<td class='number'>". $value['idx'] ."</td>
+										<td class='number'>". $value['prediction'] ."</td>
+										<td class='number'>". $value['trend'] ."</td>
+									</tr>
+								";
+								$n++;
+							}
 						@endphp
 					</tbody>
 				</table>
@@ -121,41 +123,42 @@
 					</thead>
 					<tbody>
 						@php
-							// $i = 0;
-							// foreach (@$customVariables['sales'] as $key => $value) {
-							// 	echo "
-							// 		<tr>
-							// 			<td>". $value['month'] ."</td>
-							// 			<td class='number'>". $value['y'] ."</td>
-							// 			<td class='number'>". $value['x'] ."</td>
-							// 			<td class='number'>". $value['xy'] ."</td>
-							// 			<td class='number'>". $value['xx'] ."</td>
-							// 		</tr>
-							// 	";
-							// 	$i++;
-							// }
-							// echo "
-							// 	<tr>
-							// 		<th>Total</th>
-							// 		<th class='number'>". $customVariables['sigY'] ."</th>
-							// 		<th class='number'>". $customVariables['sigX'] ."</th>
-							// 		<th class='number'>". $customVariables['sigXY'] ."</th>
-							// 		<th class='number'>". $customVariables['sigXSquare'] ."</th>
-							// 	</tr>
-							// 	<tr>
-							// 		<th>Average</th>
-							// 		<th>". $customVariables['avg'] ."</th>
-							// 		<th></th>
-							// 		<th></th>
-							// 		<th></th>
-							// 	</tr>
-							// ";
+							$i = 0;
+							foreach (@$customVariables['sales'] as $key => $value) {
+								echo "
+									<tr>
+										<td>". $value['month'] ."</td>
+										<td class='number'>". $value['y'] ."</td>
+										<td class='number'>". $value['x'] ."</td>
+										<td class='number'>". $value['xy'] ."</td>
+										<td class='number'>". $value['xx'] ."</td>
+									</tr>
+								";
+								$i++;
+							}
+							echo "
+								<tr>
+									<th>Total</th>
+									<th class='number'>". $customVariables['sigY'] ."</th>
+									<th class='number'>". $customVariables['sigX'] ."</th>
+									<th class='number'>". $customVariables['sigXY'] ."</th>
+									<th class='number'>". $customVariables['sigXSquare'] ."</th>
+								</tr>
+								<tr>
+									<th>Average</th>
+									<th>". $customVariables['avg'] ."</th>
+									<th></th>
+									<th></th>
+									<th></th>
+								</tr>
+							";
 						@endphp
 					</tbody>
 				</table>
 			</div>
 		</div>
 	</div>
+	@endif
 
 
 </div>
