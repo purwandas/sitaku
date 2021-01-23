@@ -974,9 +974,9 @@ if(!function_exists('getConfigMenu')){
 
 		if ($type == 'separator') {
 		    $configSeparator = [];
-			$configSeparator['category']      = "MASTER DATA";
-			$configSeparator['purchase']      = "REPORT";
-			$configSeparator['purchase-form'] = "TRANSACTION DETAIL";
+			$configSeparator['category']   = "MASTER DATA";
+			$configSeparator['sales']      = "REPORT";
+			$configSeparator['sales-form'] = "TRANSACTION DETAIL";
 		    return $configSeparator;
 		}
 

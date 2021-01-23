@@ -31,17 +31,17 @@ Route::group(['middleware' => ['auth']],function(){
 
 	// Route::get('/available-input', 'HomeController@index')->name('available-input.index');
 
-	Route::get('purchase-form/{id?}', 'PurchaseController@form')->name('purchase-form.index');
 	Route::get('sales-form/{id?}', 'SalesController@form')->name('sales-form.index');
-
-	Route::group(['prefix' => 'purchase','middleware' => ['auth']], function() {
-		Route::get('', 'PurchaseController@index')->name('purchase.index');
-		Route::get('import-template', 'PurchaseController@importTemplate')->name('purchase.import-template');
-	});
+	Route::get('purchase-form/{id?}', 'PurchaseController@form')->name('purchase-form.hide');
 
 	Route::group(['prefix' => 'sales','middleware' => ['auth']], function() {
 		Route::get('', 'SalesController@index')->name('sales.index');
 		Route::get('import-template', 'SalesController@importTemplate')->name('sales.import-template');
+	});
+
+	Route::group(['prefix' => 'purchase','middleware' => ['auth']], function() {
+		Route::get('', 'PurchaseController@index')->name('purchase.hide');
+		Route::get('import-template', 'PurchaseController@importTemplate')->name('purchase.import-template');
 	});
 
 	Route::group(['prefix' => 'trend-moment','middleware' => ['auth']], function() {
@@ -77,7 +77,7 @@ Route::group(['middleware' => ['auth']],function(){
 	});
 
 	Route::group(['prefix' => 'product-unit','middleware' => ['auth']], function() {
-		Route::get('', 'ProductUnitController@index')->name('product-unit.index');
+		Route::get('', 'ProductUnitController@index')->name('product-unit.hide');
 		Route::get('import-template', 'ProductUnitController@importTemplate')->name('product-unit.import-template');
 	});
 
