@@ -39,6 +39,8 @@ class UserController extends Controller
             ])
             ->setExceptDatatableColumns(['password'])
             ->setExceptFilter(['password'])
+            ->useUtilities(false)
+            ->useFilter(false)
             ->get();
         
         return view('components.global_form', $final);

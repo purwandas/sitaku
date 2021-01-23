@@ -31,7 +31,10 @@ class SupplierController extends Controller
         ];
 
         $form_data = new FormBuilderHelper(Supplier::class,$data);
-        $final     = $form_data->get();
+        $final     = $form_data
+                    ->useUtilities(false)
+                    ->useFilter(false)
+                    ->get();
         
         return view('components.global_form', $final);
     }

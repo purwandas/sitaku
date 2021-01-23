@@ -3,6 +3,12 @@
 
 #. Conversion di product Unit sama harga beli harga jual Belum Fix
 
+NEW
+- drop table produc_unit
+- di sales, input unit itu auto by selected product, karna udah gaada product unit
+- menu sales perlu cek ulang fungsi setelah drop table product unit
+- benerin fungsi filter di report sales dan product
+- 
 
 ////////////////// NOTES
 1. cek create and update user
@@ -39,3 +45,5 @@
 #. saat pembeliaan product data stock product tdk terupdate
 
 #. Hidden Menu Transaction Purchase, Report Purchase dan Product Unit
+
+- menu supplier & user -> hide filter and utilities
