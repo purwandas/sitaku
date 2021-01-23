@@ -228,6 +228,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 
         'FormBuilderHelper' => App\Components\Helpers\FormBuilderHelper::class,
+        'DatatableBuilderHelper' => App\Components\Helpers\DatatableBuilderHelper::class,
         'MenuBuilderHelper' => App\Components\Helpers\MenuBuilderHelper::class,
         'ButtonBuilderHelper' => App\Components\Helpers\ButtonBuilderHelper::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,

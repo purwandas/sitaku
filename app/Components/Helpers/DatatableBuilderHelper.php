@@ -7,11 +7,6 @@ namespace App\Components\Helpers;
  */
 class DatatableBuilderHelper
 {
-	public static function render()
-	{
-		return 'Oi';
-	}
-
 	public static function button($button, $url = '#')
 	{
 		$buttonTemplates = config('datatable-builder')['buttonTemplates'];
@@ -42,5 +37,10 @@ class DatatableBuilderHelper
 		}
 
 		return str_replace('<<url>>', $url, $buttonTemplates[$button]);
+	}
+
+	public static function render($params)
+	{
+		return view('components.minify_datatable',$params);
 	}
 }

@@ -29,7 +29,7 @@ $multipleTable = 'tbl_multiple_detail';
 
 @push('additional-css')
 <style type="text/css">
-	#submitBtnSales{
+	#submitBtnPurchase{
 		display: none;
 	}
 </style>
@@ -109,7 +109,7 @@ $multipleTable = 'tbl_multiple_detail';
             url: "{{route('product-unit.get-price')}}/" + (productId??'-') + "/" + (unitId??'-'),
             success: function (result) {
 				var data = result.data;
-				price    = data.selling_price
+				price    = data.buying_price
             },
             error: function(xhr, textStatus, errorThrown){
                 swal({
@@ -139,9 +139,9 @@ $multipleTable = 'tbl_multiple_detail';
 		if($('#totalPaid').val() != ""){
 			var change = $('.totalPaid').autoNumeric('get') - $('.totalPayment').autoNumeric('get');
 			$('.totalChange').autoNumeric('set', change  );
-			$('#submitBtnSales').show('fast');
+			$('#submitBtnPurchase').show('fast');
 		}else{
-			$('#submitBtnSales').hide('fast');
+			$('#submitBtnPurchase').hide('fast');
 			$('.totalChange').val('')
 		}
 	}

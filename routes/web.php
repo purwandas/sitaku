@@ -24,6 +24,7 @@ Route::get('/', function() {
 
 Route::group(['prefix' => 'dashboard','middleware' => ['auth']], function() {
 	Route::get('data', 'DashboardController@getdata')->name('dashboard.data');
+	Route::post('product-stock-datatable', 'DashboardController@getDatatable')->name('dashboard.product-stock-datatable');
 });
 
 Route::get('/available-input', 'HomeController@index')->name('available-input.index');

@@ -30,6 +30,11 @@ class Purchase extends BaseModel
 		return $this->belongsTo($this->_user(), 'user_id');
 	}
 
+	public function purchase_details()
+	{
+		return $this->hasMany(PurchaseDetail::class);
+	}
+
 	public static function _user()
 	{
 		return '\\App\User';

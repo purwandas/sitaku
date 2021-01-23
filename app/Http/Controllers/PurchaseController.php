@@ -10,6 +10,7 @@ use App\Components\Traits\ApiController;
 use App\Exports\PurchaseExportPdf;
 use App\Exports\PurchaseExportXls;
 use App\Imports\PurchaseImport;
+use App\Product;
 use App\ProductUnit;
 use App\Templates\PurchaseImportSheetTemplate;
 use App\User;
@@ -168,7 +169,7 @@ class PurchaseController extends Controller
                     ->useDatatable(false)
                     ->setExceptFormBuilderColumns(['total_payment', 'total_paid', 'total_change'])
                     ->setCustomFormBuilder($customFormBuilder)
-                    ->injectView('inject/sales-form')
+                    ->injectView('inject/purchase-form')
                     ->get();
         
         return view('components.global_form', $final);
@@ -270,7 +271,7 @@ class PurchaseController extends Controller
                         'product_id' => $value['product'],
                         'unit_id'    => $value['unit'],
                     ],[
-                        'selling_price' => getAutoNumeric($value['unit_price'])
+                        'buying_price' => getAutoNumeric($value['unit_price'])
                     ]);
 
                     PurchaseDetail::updateOrCreate([
@@ -282,6 +283,11 @@ class PurchaseController extends Controller
                         'qty'        => getAutoNumeric($value['unit_qty']),
                         'total'      => getAutoNumeric($value['total']),
                     ]);
+
+                    // Nambahin Stock
+                    $product = Product::findOrFail($value['product']);
+                    $product->stock = $product->stock + $value['unit_qty'];
+                    $product->save();
                 }
                 return $purchase;
             });
@@ -321,6 +327,16 @@ class PurchaseController extends Controller
         try{
             DB::transaction(function () use ($id) {
                 $purchase = Purchase::findOrFail($id);
+                
+                // Balikin Stock
+                foreach ($purchase->purchase_details as $detail) {
+                    $product = Product::findOrFail($detail->product_id);
+                    $product->stock = $product->stock - $detail->qty;
+                    $product->save();
+                }
+
+                $purchase->purchase_details()->delete();
+
                 $purchase->delete();
             });
         }catch(\Exception $ex){
