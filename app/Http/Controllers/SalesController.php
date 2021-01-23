@@ -10,7 +10,6 @@ use App\Exports\SalesExportPdf;
 use App\Exports\SalesExportXls;
 use App\Imports\SalesImport;
 use App\Product;
-use App\ProductUnit;
 use App\SalesDetail;
 use App\Templates\SalesImportSheetTemplate;
 use App\TrendMoment;
@@ -260,13 +259,6 @@ class SalesController extends Controller
                 $sales->fillAndValidate($newRequest)->save();
 
                 foreach ($request['detail'] as $key => $value) {
-                    ProductUnit::updateOrCreate([
-                        'product_id' => $value['product'],
-                        'unit_id'    => $value['unit'],
-                    ],[
-                        'selling_price' => getAutoNumeric($value['unit_price'])
-                    ]);
-
                     SalesDetail::updateOrCreate([
                         'sales_id'   => $sales->id,
                         'product_id' => $value['product'],
