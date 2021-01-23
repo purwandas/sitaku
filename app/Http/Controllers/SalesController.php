@@ -74,13 +74,15 @@ class SalesController extends Controller
         ];
 
         $customFormBuilder = [];
+        $exceptColumn      = ['total_payment', 'total_paid', 'total_change'];
 
-        if (!(@\Auth::user()->role_id) == User::MASTER_ADMIN)
-        $customFormBuilder['user_id'] = [
-            'type' => 'hidden',
-            'value' => @\Auth::user()->id
+        if (! (@\Auth::user()->role_id == User::MASTER_ADMIN) ){
+            $customFormBuilder['user_id'] = [
+                'type' => 'hidden',
+                'value' => @\Auth::user()->id
 
-        ];
+            ];
+        }
 
         $customFormBuilder['date'] = [
             'type'      => 'date',
@@ -168,7 +170,7 @@ class SalesController extends Controller
                     ->setFormPage(true)
                     ->useModal(false)
                     ->useDatatable(false)
-                    ->setExceptFormBuilderColumns(['total_payment', 'total_paid', 'total_change'])
+                    ->setExceptFormBuilderColumns($exceptColumn)
                     ->setCustomFormBuilder($customFormBuilder)
                     ->injectView('inject/sales-form')
                     ->get();
