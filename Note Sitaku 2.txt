@@ -1,3 +1,4 @@
+////////////////// BELUMMM
 5. Dibagian transaction sale di change/kembalian kluar minus sesuai jml yg harus dibayarkan walaupun belum inputkan paid, harusnya dibuat input paid dulu baru keluar change nya
 
 --------------------------------------------------------------
@@ -12,13 +13,12 @@
 
 #. dibagian report purchase belum fix, dan belum ada product details di report purchase seperti yang ada di report sales jika terdapat lebih dr 1 product sales/purchase
 
-#. Membuat form inputan untuk metode trend moment datanya diambil dari hasil data transaksi sales
 
 
 
 ////////////////// NOTES
 1. cek create and update user
-
+2. cek trend moment
 
 ////////////////// PENDING (LOW PRIOR)
 3. Dibagian filter belum fix untuk bebrapa menu yang ada fitur filternya
@@ -32,6 +32,8 @@
 2. Menu Production, Category, Unit, Product Unit fitur Filter di hidden aja.
 
 4. set Hak akses admin Full akses, hak akses kasir tdk bisa akses menu permission dan user
+
+#. Membuat form inputan untuk metode trend moment datanya diambil dari hasil data transaksi sales
 
 ====================================
 #Dashboard Home :
