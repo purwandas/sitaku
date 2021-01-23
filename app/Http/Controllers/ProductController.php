@@ -71,6 +71,12 @@ class ProductController extends Controller
             ->make(true);
     }
 
+    public function getDataProduct(Request $request)
+    {
+        $data = Product::findOrFail($request->product_id);
+        return $this->sendResponse($data, 'Get Data Success!');
+    }
+
     public function store(Request $request)
     {
         try{

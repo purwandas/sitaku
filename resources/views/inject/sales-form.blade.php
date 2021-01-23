@@ -59,21 +59,32 @@ $multipleTable = 'tbl_multiple_detail';
 		_subTotal = price.autoNumeric('get') * qty.autoNumeric('get');
 
 		subTotal.autoNumeric('set',_subTotal);
-		$('#totalPayment').autoNumeric('set', getTotal() );
+		$('#totalPayment').autoNumeric('set', getTotal());
+		setChange();
 	});
 
 	$('body #{{$multipleTable}}').on('change', '.get-price', function(e) {
 		var parent       = $(this).closest('tr'),
 			product      = parent.find('.product'),
-			unit         = parent.find('.unit'),
 			price        = parent.find('.price'),
+			stock        = parent.find('.stock'),
+			qty        = parent.find('.qty'),
+			subTotal        = parent.find('.sub-total'),
 			sellingPrice = '';
 
-		(async function() {
-			sellingPrice = await getPrice(product.val(), unit.val());
-			if ($.isNumeric(sellingPrice))
-			price.autoNumeric('set',sellingPrice);
-		})();
+		if($(this).val() !== null){
+			price.removeAttr('disabled');
+			qty.removeAttr('disabled');
+			(async function() {
+				var data = await getDataProduct(product.val());
+				sellingPrice = data.selling_price;
+				productStock = data.stock;
+				if ($.isNumeric(sellingPrice))
+				price.autoNumeric('set',sellingPrice);
+				if ($.isNumeric(productStock))
+				stock.autoNumeric('set',productStock);
+			})();
+		}
 	});
 
 	$(document).ready(function() {
@@ -100,26 +111,18 @@ $multipleTable = 'tbl_multiple_detail';
 		initNumeric();
     });
 
-    async function getPrice(productId = '-', unitId = '-') {
-    	var price = '';
+    async function getDataProduct(productId = '-') {
+    	var product = '';
 
-    	if (!isNaN(productId) && !isNaN(unitId))
-    	await $.ajax({
-            type: 'POST',
-            url: "{{route('product-unit.get-price')}}/" + (productId??'-') + "/" + (unitId??'-'),
-            success: function (result) {
-				var data = result.data;
-				price    = data.selling_price
-            },
-            error: function(xhr, textStatus, errorThrown){
-                swal({
-                	title: "Gagal melakukan request",
-                	text: xhr.responseJSON.msg,
-                	type: "error"
-                });
-            }
-        });
-    	return price;
+    	if (!isNaN(productId))
+
+    	await $.post('{{route('product.get-data-product')}}',{
+		    		product_id: productId,
+		    	},function(result){
+		    		product = result.data;
+		    	});
+
+    	return product;
     }
 
 	function initNumeric() {
@@ -131,14 +134,15 @@ $multipleTable = 'tbl_multiple_detail';
 
 	function getTotal() {
 		var ek = $('.sub-total').map((_,el) => el.value.split('.').join('').replace(',','.')).get();
-		setChange();
+		// setChange();
 		return ek.reduce((a, b) => Number(a) + Number(b), 0);
 	}
 
 	function setChange() {
-		if($('#totalPaid').val() != ""){
-			var change = $('.totalPaid').autoNumeric('get') - $('.totalPayment').autoNumeric('get');
-			$('.totalChange').autoNumeric('set', change  );
+		var change = $('.totalPaid').autoNumeric('get') - $('.totalPayment').autoNumeric('get');
+		console.log(change)
+		if(change >= 0){
+			$('.totalChange').autoNumeric('set', change);
 			$('#submitBtnSales').show('fast');
 		}else{
 			$('#submitBtnSales').hide('fast');

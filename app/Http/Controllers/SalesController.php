@@ -101,31 +101,37 @@ class SalesController extends Controller
                 'placeholder' => 'Product',
                 'required'    => 'required',
                 'class'       => 'get-price product',
+            ],
+            'pluginOptions' => [
+                'allowClear' => false,
             ]
         ];
 
         $multipleColumn2[1] = [
-            'type'      => 'select2',
-            'name'      => 'unit',
-            'text'      => 'obj.name',
-            'options'   => 'unit.select2',
-            'keyTerm'   => '_name',
-            'elOptions' => [
-                'placeholder' => 'Unit',
-                'required'    => 'required',
-                'class'       => 'get-price unit',
-            ]
-        ];
-
-        $multipleColumn2[2] = [
             'type'    => 'text',
             'name'    => 'unit_price',
             'options' => [
                 'labelText' => 'Price',
                 'elOptions' => [
+                    'disabled' => true,
                     'placeholder' => 'Price',
                     'class'       => 'form-control money calc price',
                     'min'         => 0
+                ]
+            ]
+        ];
+
+        $multipleColumn2[2] = [
+            'type'    => 'text',
+            'name'    => 'unit_stock',
+            'options' => [
+                'labelText' => 'Stock',
+                'elOptions' => [
+                    'disabled' => true,
+                    'placeholder' => 'Stock',
+                    'class'       => 'form-control money calc stock',
+                    'min'         => 0,
+                    'width' => '100px',
                 ]
             ]
         ];
@@ -136,6 +142,7 @@ class SalesController extends Controller
             'options' => [
                 'labelText' => 'Qty',
                 'elOptions' => [
+                    'disabled' => true,
                     'placeholder' => 'Qty',
                     'class'       => 'form-control money calc qty',
                     'min'         => 0,
@@ -259,10 +266,12 @@ class SalesController extends Controller
                 $sales->fillAndValidate($newRequest)->save();
 
                 foreach ($request['detail'] as $key => $value) {
+                    $product = Product::findOrFail($value['product']);
+
                     SalesDetail::updateOrCreate([
                         'sales_id'   => $sales->id,
-                        'product_id' => $value['product'],
-                        'unit_id'    => $value['unit'],
+                        'product_id' => $product->id,
+                        'unit_id'    => $product->unit_id,
                     ],[
                         'price'      => getAutoNumeric($value['unit_price']),
                         'qty'        => getAutoNumeric($value['unit_qty']),
@@ -271,14 +280,14 @@ class SalesController extends Controller
 
                     $now = Carbon::now();
 
-                    $trend = TrendMoment::where('product_id',$value['product'])
+                    $trend = TrendMoment::where('product_id',$product->id)
                                         ->where('month_',$now->month)
                                         ->where('year_',$now->year)
                                         ->first();
 
                     if(!$trend){
                         $trend = new TrendMoment;
-                        $trend->product_id = $value['product'];
+                        $trend->product_id = $product->id;
                         $trend->month_ = $now->month;
                         $trend->year_ = $now->year;
                         $trend->total_sales = $value['unit_qty'];
@@ -297,7 +306,6 @@ class SalesController extends Controller
                     // $trend->total_sales = $trend->total_sales + $value['unit_qty'];
 
                     // Ngurangin Stock
-                    $product = Product::findOrFail($value['product']);
                     if($value['unit_qty'] <= $product->stock){
                         $product->stock = $product->stock - $value['unit_qty'];
                         $product->save();
