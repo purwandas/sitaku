@@ -47,11 +47,11 @@ class TrendMomentController extends Controller
     public function calculation($product, $month)
     {
         // TEST SELECTED MONTH
-        $month = 1;
+        // $month = 1;
         // TEST SELECTED PRODUCT
-        $product = null;
+        // $product = null;
 
-        return $trendData  = TrendMoment::
+        $trendData  = TrendMoment::
             when( @$product, function($q) use ($product){
                 $q->whereProductId($product);
             })

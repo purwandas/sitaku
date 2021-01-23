@@ -56,6 +56,9 @@ class AppServiceProvider extends ServiceProvider
         $events->listen(BuildingMenu::class, function (BuildingMenu $event) {
             $menu = MenuBuilderHelper::getMenu();
             foreach ($menu as $key => $value) {
+                if (($value['key'] == 'role' || $value['key'] == 'user') && (\Auth::user()->role_id != 1)) {
+                    continue;
+                }
                 $var = $value;
                 if (array_key_exists($value['key'], getConfigMenu('icon'))) {
                     $var['icon'] = getConfigMenu('icon')[$value['key']];

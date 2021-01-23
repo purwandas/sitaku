@@ -79,6 +79,8 @@ class UserController extends Controller
             $user = DB::transaction(function () use ($request) {
                 $user = new User;
                 $user->fillAndValidate()->save();
+                $user->password = bcrypt($request->password);
+                $user->save();
                 return $user;
             });
         }catch(\Exception $ex){
@@ -100,8 +102,16 @@ class UserController extends Controller
     {
         try{
             $user = DB::transaction(function () use ($request, $id) {
+                $newRequest = $request->all();
+                
+                if(!empty($newRequest['password'])){
+                    $newRequest['password'] = bcrypt($newRequest['password']);
+                } else {
+                    unset($newRequest['password']);
+                }
+
                 $user = User::findOrFail($id);
-                $user->fillAndValidate()->save();
+                $user->fillAndValidate($newRequest)->save();
                 return $user;
             });
         }catch(\Exception $ex){

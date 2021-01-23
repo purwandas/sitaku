@@ -312,7 +312,7 @@ $exceptForeign = @$exceptForeign ?? [];
 		var {{$name}}_tableOrder      = {!! json_encode($order) !!};
 		var {{$name}}_tableColumnDefs = {!! json_encode($columnDefs) !!};
 		var {{$name}}_tableColumns    = {!! json_encode($columns) !!};
-		var {{$name}}_useFilter    	  = {{ @$useFilter??'false' }};
+		var {{$name}}_useFilter    	  = {{ @$useFilter ? $useFilter : 'false' }};
 		var {{$name}}_tableLengthMenu = {!! json_encode($lengthMenu) !!};
 		var {{$name}}_tableFixedColumns = {!! json_encode($fixedColumns) !!};
 

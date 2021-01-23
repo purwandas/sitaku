@@ -962,21 +962,21 @@ if(!function_exists('getConfigMenu')){
 	function getConfigMenu($type) {
 		if ($type == 'icon') {
 	        $configIcon = [];
-		    $configIcon['user'] = "fas fa-users-cog";
-		    $configIcon['role'] = "fas fa-address-card";
-		    $configIcon['category'] = "far fa-caret-square-right";
-		    $configIcon['product'] = "fas fa-file-medical";
-		    $configIcon['production'] = "fas fa-industry";
-		    $configIcon['supplier'] = "fab fa-supple";
+			$configIcon['user']       = "fas fa-users-cog";
+			$configIcon['role']       = "fas fa-address-card";
+			$configIcon['category']   = "far fa-caret-square-right";
+			$configIcon['product']    = "fas fa-file-medical";
+			$configIcon['production'] = "fas fa-industry";
+			$configIcon['supplier']   = "fab fa-supple";
 
 		    return $configIcon;
 		}
 
 		if ($type == 'separator') {
 		    $configSeparator = [];
-		    $configSeparator['role'] = "MASTER DATA";
-		    $configSeparator['purchase'] = "REPORT";
-		    $configSeparator['purchase-form'] = "TRANSACTION DETAIL";
+			$configSeparator['category']      = "MASTER DATA";
+			$configSeparator['purchase']      = "REPORT";
+			$configSeparator['purchase-form'] = "TRANSACTION DETAIL";
 		    return $configSeparator;
 		}
 
@@ -988,9 +988,9 @@ if(!function_exists('getConfigMenu')){
 
 		if ($type == 'text') {
 		    $configLabel = [];
-		    $configLabel['role'] = "Permission";
-		    $configLabel['sales-form'] = "Sales";
-		    $configLabel['purchase-form'] = "Purchase";
+			$configLabel['role']          = "Permission";
+			$configLabel['sales-form']    = "Sales";
+			$configLabel['purchase-form'] = "Purchase";
 		    return $configLabel;
 		}
     }
