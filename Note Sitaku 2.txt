@@ -1,15 +1,7 @@
 ////////////////// BELUMMM
 5. Dibagian transaction sale di change/kembalian kluar minus sesuai jml yg harus dibayarkan walaupun belum inputkan paid, harusnya dibuat input paid dulu baru keluar change nya
 
---------------------------------------------------------------
-
-#. Hidden Menu Transaction Purchase, Report Purchase dan Product Unit
-
 #. Conversion di product Unit sama harga beli harga jual Belum Fix
-
-#. dibagian report purchase belum fix, dan belum ada product details di report purchase seperti yang ada di report sales jika terdapat lebih dr 1 product sales/purchase
-
-
 
 
 ////////////////// NOTES
@@ -18,7 +10,7 @@
 
 ////////////////// PENDING (LOW PRIOR)
 3. Dibagian filter belum fix untuk bebrapa menu yang ada fitur filternya
-
+#. dibagian report purchase belum fix, dan belum ada product details di report purchase seperti yang ada di report sales jika terdapat lebih dr 1 product sales/purchase (ini kan di hide)
 
 ////////////////// DONE
 
@@ -45,3 +37,5 @@
 #. Di transaction purchases belum fix karena masih copas dr coding transaction sales :v (Dicek dulu)
 
 #. saat pembeliaan product data stock product tdk terupdate
+
+#. Hidden Menu Transaction Purchase, Report Purchase dan Product Unit
