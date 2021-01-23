@@ -7,10 +7,6 @@
 
 #. Conversion di product Unit sama harga beli harga jual Belum Fix
 
-#. Di transaction purchases belum fix karena masih copas dr coding transaction sales :v
-
-#. saat pembeliaan product data stock product tdk terupdate 
-
 #. dibagian report purchase belum fix, dan belum ada product details di report purchase seperti yang ada di report sales jika terdapat lebih dr 1 product sales/purchase
 
 
@@ -43,3 +39,9 @@
 - Total Supplier
 - Total Pemasukan perhari
 - Total Pemasukan keseluruhan
+
+5. Dibagian transaction sale di change/kembalian kluar minus sesuai jml yg harus dibayarkan walaupun belum inputkan paid, harusnya dibuat input paid dulu baru keluar change nya (Dicek dulu)
+
+#. Di transaction purchases belum fix karena masih copas dr coding transaction sales :v (Dicek dulu)
+
+#. saat pembeliaan product data stock product tdk terupdate

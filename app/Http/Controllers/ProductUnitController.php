@@ -74,13 +74,13 @@ class ProductUnitController extends Controller
 
     public function getPrice($productId = '', $unitId = '')
     {
-        $price = null;
         if (! ($data = Product::whereId($productId)->whereUnitId($unitId)->first()) ) {
             $data = ProductUnit::whereProductId($productId)->whereUnitId($unitId)->first();
         }
 
-        $price = @$data->selling_price;
-        return $this->sendResponse(['selling_price' => $price], 'Get Data Success!');
+        $sellingPrice = @$data->selling_price;
+        $buyingPrice = @$data->buying_price;
+        return $this->sendResponse(['selling_price' => $sellingPrice,'buying_price' => $buyingPrice], 'Get Data Success!');
     }
 
     public function store(Request $request)

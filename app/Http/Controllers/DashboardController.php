@@ -25,4 +25,13 @@ class DashboardController extends Controller
 
     	return response()->json($result);
     }
+
+    public function getDatatable(Request $request)
+    {
+    	$data = Product::join('categories','products.category_id','categories.id')
+    					->select('categories.name as category_name','products.name as product_name','stock')
+    					->get();
+
+    	return \DataTables::of($data)->make(true);
+    }
 }
