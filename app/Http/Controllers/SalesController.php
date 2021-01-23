@@ -82,6 +82,19 @@ class SalesController extends Controller
                 'value' => @\Auth::user()->id
 
             ];
+        } else {
+            $customFormBuilder['user_id'] = [
+                'type'      => 'select2',
+                'value'     => [@\Auth::user()->id, \Auth::user()->name],
+                'name'      => 'user_id',
+                'text'      => 'obj.name',
+                'options'   => 'user.select2',
+                'keyTerm'   => '_name',
+                'elOptions' => [
+                    'placeholder' => 'User',
+                    'readonly'    => 'readonly',
+                ]
+            ];
         }
 
         $customFormBuilder['date'] = [
