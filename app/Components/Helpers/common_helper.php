@@ -975,9 +975,9 @@ if(!function_exists('getConfigMenu')){
 		if ($type == 'separator') {
 		    $configSeparator = [];
 			if (\Auth::user()->role_id != 1) {
-				$configSeparator['category']   = "MASTER DATA";
+				$configSeparator['category'] = "MASTER DATA";
 			} else {
-				$configSeparator['role']   = "MASTER DATA";
+				$configSeparator['role']     = "MASTER DATA";
 			}
 			$configSeparator['sales']      = "REPORT";
 			$configSeparator['sales-form'] = "TRANSACTION";
