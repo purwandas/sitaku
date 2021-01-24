@@ -13,17 +13,25 @@ class SalesExportPdf
 	{
 		return false;
 		$filter = new SalesFilter(new Request($params));
-		$data   = Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
-			->select('sales.date', 'suppliers.name as supplier_name')
-			->filter($filter)->get();
+        $data   = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter)->get();
+
+        foreach ($data as $key => $value) {
+            $detail = SalesDetail::whereSalesId($data->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
+
+            $data[$key]['product'] = count($detail) ? implode(', ', $detail) : '-';
+        }
 
 		dirExists($fileName);
 
 		$pdf    = PDF::loadView('components.pdf_template', [
 			'data'   => $data,
 			'header' => [
+				['USER','text']
 				['DATE','-'],
-				['SUPPLIER NAME','text']
+				['PRODUCT','text']
+				['TOTAL PAYMENT','text']
+				['TOTAL PAID','text']
+				['TOTAL CHANGE','text']
 			],
 			'columns' => [
 				'date', 'supplier_name'

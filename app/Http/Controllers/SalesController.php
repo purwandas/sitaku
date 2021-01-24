@@ -416,7 +416,7 @@ class SalesController extends Controller
             'title'   => 'Download '.$this->label,
             'filters' => $request->all(),
             'model'   => SalesExportXls::class,
-            'module'  => $this->label,
+            'module'  => 'Sales',
             'path'    => 'exports/sales/xlsx',
             'ext'     => 'xlsx',
         ]);
@@ -431,7 +431,7 @@ class SalesController extends Controller
             'title'   => 'Download '.$this->label,
             'filters' => $request->all(),
             'model'   => SalesExportPdf::class,
-            'module'  => $this->label,
+            'module'  => 'Sales',
             'path'    => 'exports/sales/pdf',
         ]);
         

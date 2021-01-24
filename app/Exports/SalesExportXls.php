@@ -25,16 +25,21 @@ class SalesExportXls implements FromCollection, WithHeadings, ShouldAutoSize, Wi
 
     public function collection()
     {
-        return false;
         $filter = new SalesFilter(new Request(self::$params));
-        return Sales::join('suppliers', 'suppliers.id', 'sales.supplier_id')
-			->select('sales.date', 'suppliers.name as supplier_name')
-			->filter($filter)->get();
+        $data   = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter)->get();
+
+        foreach ($data as $key => $value) {
+            $detail = SalesDetail::whereSalesId($data->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
+
+            $data[$key]['product'] = count($detail) ? implode(', ', $detail) : '-';
+        }
+
+        return $data;
     }
 
     public function headings(): array
     {
-        return ['DATE', 'SUPPLIER ID'];
+        return ['USER', 'DATE', 'PRODUCT', 'TOTAL PAYMENT', 'TOTAL PAID', 'TOTAL CHANGE'];
     }
 
     public function registerEvents(): array

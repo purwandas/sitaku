@@ -101,6 +101,14 @@ class TrendMomentController extends Controller
             ];
         }
 
+        if ( ( ($sigXSquare * $n) - ($sigX * $sigX) ) == 0) {
+            return [
+                'message' => 'Cannot calculate data',
+                'product' => [$product, $productName],
+                'month'   => $month,
+            ];
+        }
+
         $avg = $sigY / ($idx);
         $seasonIndex /= $avg;
 
