@@ -101,6 +101,13 @@ class TrendMomentController extends Controller
             ];
         }
 
+
+        $avg = $sigY / ($idx);
+        $seasonIndex /= $avg;
+
+        // ΣY = n.a + b.ΣX
+        $n = $idx;
+        
         if ( ( ($sigXSquare * $n) - ($sigX * $sigX) ) == 0) {
             return [
                 'message' => 'Cannot calculate data',
@@ -108,12 +115,6 @@ class TrendMomentController extends Controller
                 'month'   => $month,
             ];
         }
-
-        $avg = $sigY / ($idx);
-        $seasonIndex /= $avg;
-
-        // ΣY = n.a + b.ΣX
-        $n = $idx;
 
         // ΣXY = a.ΣX + b.ΣX²
 
