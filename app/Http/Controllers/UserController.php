@@ -113,7 +113,7 @@ class UserController extends Controller
                 }
 
                 $user = User::findOrFail($id);
-                $user->fillAndValidate($newRequest)->save();
+                $user->fillAndValidateUpdate($newRequest)->save();
                 return $user;
             });
         }catch(\Exception $ex){

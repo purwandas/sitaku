@@ -34,6 +34,9 @@ class RoleController extends Controller
         $final     = $form_data
                     ->useUtilities(false)
                     ->useFilter(false)
+                    ->setCreatable(false)
+                    ->useDatatableAction(false)
+                    ->setDatatableOrder([0])
                     ->get();
         
         return view('components.global_form', $final);

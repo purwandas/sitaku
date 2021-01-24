@@ -46,8 +46,18 @@ class User extends Authenticatable implements JWTSubject
     public static function rule(){
         return [
             'name' => 'required|string|min:8|max:50',
-            'email' => 'required|email|unique:users,email',
+            'email' => 'required|email|sometimes|unique:users,email',
             'password' => 'required',
+            'role_id' => 'required|exists:roles,id',
+        ];
+    
+    }
+
+    public static function ruleUpdate(){
+        return [
+            'name' => 'required|string|min:8|max:50',
+            'email' => 'required|email|sometimes',
+            'password' => 'nullable',
             'role_id' => 'required|exists:roles,id',
         ];
     
@@ -80,6 +90,17 @@ class User extends Authenticatable implements JWTSubject
     public function fillAndValidate($customData = null, $rule = null)
     {
         $rule = $rule ?? static::rule($this);
+        $data = $customData ?? request()->all();
+        $attributes = method_exists(static::class, 'attributes') ? static::attributes() : [];
+
+        $validatedData = \Validator::make($data, $rule, [], $attributes)->validate();
+
+        return parent::fill($validatedData);
+    }
+
+    public function fillAndValidateUpdate($customData = null, $rule = null)
+    {
+        $rule = $rule ?? static::ruleUpdate($this);
         $data = $customData ?? request()->all();
         $attributes = method_exists(static::class, 'attributes') ? static::attributes() : [];
 
