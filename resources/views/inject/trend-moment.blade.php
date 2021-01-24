@@ -61,7 +61,7 @@
 	<div id="errorDiv" class="col-md-12">
 		<div class="card">
 			<div class="card-header text-center">
-				<strong>Data not found</strong>
+				<strong>Something went wrong</strong>
 			</div>
 			<div class="card-body text-center">
 				{{ @$customVariables['message'] }}
