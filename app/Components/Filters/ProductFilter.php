@@ -21,7 +21,7 @@ class ProductFilter extends QueryFilters
 
 	public function name($value)
 	{
-		return is_array($value) ? $this->builder->whereIn('products.name', $value) : $this->builder->where('products.name', $value);
+		return $this->builder->where('products.name', 'like', '%'.$value.'%');
 	}
 	public function _name($value)
 	{
