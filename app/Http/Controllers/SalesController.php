@@ -52,7 +52,7 @@ class SalesController extends Controller
                         5 => ['class','text-right'],
                         6 => ['class','text-right'],
                     ])
-                    ->setDatatableColumnDefs([3 => ['orderable', false]])
+                    // ->setDatatableColumnDefs([3 => ['orderable', false]])
                     ->setDatatableButtons(['export-xls','export-pdf','job-status'])
                     ->injectView(['inject/sales-detail'])
                     ->get();
@@ -215,7 +215,7 @@ class SalesController extends Controller
         $data = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter);
 
         return \DataTables::of($data)
-            ->editColumn('product', function($data){
+            ->addColumn('product', function($data){
                 $detail = SalesDetail::whereSalesId($data->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
                 if (count($detail)) {
                     if (count($detail) <= 1) {
