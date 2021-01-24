@@ -134,7 +134,7 @@
 				@endphp
 				$('#{{$id}}_'+row).select2({
 				    placeholder: "{{ $placeholder }}",
-				    allowClear: true,
+				    allowClear: {{isset($column['pluginOptions']['allowClear']) ? ($column['pluginOptions']['allowClear'] ? 'true' : 'false') : 'true'}},
 				    ajax: {
 				    	url: "{{route($column['options'])}}",
 				    	method: 'POST',

@@ -85,6 +85,8 @@ Route::group(['prefix' => 'product','middleware' => ['auth:api']], function() {
 	Route::post('export-pdf', 'ProductController@exportPdf')->name('product.export-pdf');
 	Route::post('import', 'ProductController@import')->name('product.import');
 	Route::post('select2', 'ProductController@select2')->name('product.select2');
+	Route::post('get-data-product', 'ProductController@getDataProduct')->name('product.get-data-product');
+
 });
 
 Route::group(['prefix' => 'supplier','middleware' => ['auth:api']], function() {
