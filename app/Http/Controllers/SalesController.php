@@ -52,6 +52,7 @@ class SalesController extends Controller
                         5 => ['class','text-right'],
                         6 => ['class','text-right'],
                     ])
+                    ->setDatatableColumnDefs([3 => ['orderable', false]])
                     ->setDatatableButtons(['export-xls','export-pdf','job-status'])
                     ->injectView(['inject/sales-detail'])
                     ->get();
