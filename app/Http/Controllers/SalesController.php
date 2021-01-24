@@ -53,6 +53,23 @@ class SalesController extends Controller
                         6 => ['class','text-right'],
                     ])
                     // ->setDatatableColumnDefs([3 => ['orderable', false]])
+                    ->setCustomFilterBuilder([
+                        'product_id' => 
+                        [
+                            'type'      => 'select2',
+                            'name'      => 'product_id',
+                            'text'      => 'obj.name',
+                            'options'   => 'product.select2',
+                            'keyTerm'   => '_name',
+                            'elOptions' => [
+                                'placeholder' => 'Product',
+                            ],
+                            'pluginOptions' => [
+                                'allowClear' => false,
+                            ]
+
+                        ]
+                    ])
                     ->setDatatableButtons(['export-xls','export-pdf','job-status'])
                     ->injectView(['inject/sales-detail'])
                     ->get();

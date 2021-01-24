@@ -9,6 +9,11 @@ class CategoryFilter extends QueryFilters
 		return is_array($value) ? $this->builder->whereIn('categories.name', $value) : $this->builder->where('categories.name', $value);
 	}
 
+	public function _category($value)
+	{
+		return $this->builder->where('categories.name', 'like', '%'.$value.'%');
+	}
+
 	public function groupBy($value)
 	{
 		return $this->builder->groupBy($value);

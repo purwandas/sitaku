@@ -9,6 +9,11 @@ class ProductFilter extends QueryFilters
 		return is_array($value) ? $this->builder->whereIn('products.name', $value) : $this->builder->where('products.name', $value);
 	}
 
+	public function _product($value)
+	{
+		return $this->builder->where('products.name', 'like', '%'.$value.'%');
+	}
+
 	public function groupBy($value)
 	{
 		return $this->builder->groupBy($value);
@@ -52,17 +57,17 @@ class ProductFilter extends QueryFilters
 
 	public function unit_id($value)
 	{
-		return is_array($value) ? $this->builder->whereIn('units.id', $value) : $this->builder->where('products.id', $value);
+		return is_array($value) ? $this->builder->whereIn('units.id', $value) : $this->builder->where('units.id', $value);
 	}
 
 	public function category_id($value)
 	{
-		return is_array($value) ? $this->builder->whereIn('categories.id', $value) : $this->builder->where('products.id', $value);
+		return is_array($value) ? $this->builder->whereIn('categories.id', $value) : $this->builder->where('categories.id', $value);
 	}
 
 	public function production_id($value)
 	{
-		return is_array($value) ? $this->builder->whereIn('productions.id', $value) : $this->builder->where('products.id', $value);
+		return is_array($value) ? $this->builder->whereIn('productions.id', $value) : $this->builder->where('productions.id', $value);
 	}
 
 }

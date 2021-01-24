@@ -86,7 +86,7 @@ $rules = array_merge($rules, $custom);
 				$custom[$key]['elOptions']['placeholder'] = "Select ".$field." here";
 
 				$attributes['labelText'] = $field;
-				$attributes['keyTerm']   = $foreign['column'];
+				$attributes['keyTerm']   = '_'.$foreign['column'];
 				$related                 = getForeignClass($model, $foreign['column']);
 				$select2Text             = array_map(function($val) { return "obj.$val"; }, @$related::labelText() ?? ['name']);
 				$select2Text             = implode("+' - '+", $select2Text);

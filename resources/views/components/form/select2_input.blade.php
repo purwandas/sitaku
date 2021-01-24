@@ -156,7 +156,7 @@ if(isset($config['elOptions'])){
 			method: "{{ $method }}",
 			data: function(params) {
 				var data = {
-					{{ @$config['keyTerm'] ?? 'name' }}: params.term,
+					{{ @$config['keyTerm'] ?? '_name' }}: params.term,
 					page: params.page
 				}
 				@foreach ($config['ajaxParams'] as $key => $val)

@@ -9,6 +9,11 @@ class UnitFilter extends QueryFilters
 		return is_array($value) ? $this->builder->whereIn('units.name', $value) : $this->builder->where('units.name', $value);
 	}
 
+	public function _unit($value)
+	{
+		return $this->builder->where('units.name', 'like', '%'.$value.'%');
+	}
+
 	public function groupBy($value)
 	{
 		return $this->builder->groupBy($value);

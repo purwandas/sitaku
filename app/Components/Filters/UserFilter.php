@@ -9,6 +9,11 @@ class UserFilter extends QueryFilters
 		return is_array($value) ? $this->builder->whereIn('users.name', $value) : $this->builder->where('users.name', $value);
 	}
 
+	public function _user($value)
+	{
+		return $this->builder->where('users.name', 'like', '%'.$value.'%');
+	}
+
 	public function groupBy($value)
 	{
 		return $this->builder->groupBy($value);

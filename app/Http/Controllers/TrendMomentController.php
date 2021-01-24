@@ -93,7 +93,7 @@ class TrendMomentController extends Controller
 
         $productName = Product::findOrFail($product)->name;
 
-        if ($idx == 0) {
+        if ($idx == 0 || $sigY == 0) {
             return [
                 'message' => 'No Data Found',
                 'product' => [$product, $productName],

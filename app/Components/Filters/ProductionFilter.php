@@ -9,6 +9,11 @@ class ProductionFilter extends QueryFilters
 		return is_array($value) ? $this->builder->whereIn('productions.name', $value) : $this->builder->where('productions.name', $value);
 	}
 
+	public function _production($value)
+	{
+		return $this->builder->where('productions.name', 'like', '%'.$value.'%');
+	}
+
 	public function groupBy($value)
 	{
 		return $this->builder->groupBy($value);
