@@ -36,6 +36,7 @@ class RoleController extends Controller
                     ->useFilter(false)
                     ->setCreatable(false)
                     ->useDatatableAction(false)
+                    ->disableInfo(true)
                     ->setDatatableOrder([0])
                     ->get();
         

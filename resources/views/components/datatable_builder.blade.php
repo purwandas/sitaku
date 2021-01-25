@@ -1,5 +1,6 @@
 @php
 $useModal      = $useModal ?? false;
+$disableInfo   = $disableInfo ?? false;
 $name          = $name ?? @$model::toKey()['snake'];
 $class         = $class ?? @$model::toKey()['class'];
 $cRoute        = $cRoute ?? @$model::toKey()['route'];
@@ -390,6 +391,12 @@ $exceptForeign = @$exceptForeign ?? [];
 		        order:          tableOrder,
 		        columnDefs:     tableColumnDefs,
 		        columns:        tableColumns,
+		        @if ($disableInfo)
+			        bPaginate: false,
+				    bLengthChange: false,
+				    bFilter: true,
+				    bInfo: false,
+			    @endif
 		        ajax: {
 		            url: tableUrl,
 		            type: 'POST',

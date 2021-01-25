@@ -133,6 +133,14 @@ class FormBuilderHelper
 		return $this->getRecentArray();
 	}
 
+	public function disableInfo($value = false)
+	{
+		$config = $this->getGlobalConfig();
+		$config['setupDatatableBuilder']['disableInfo'] = $value;
+		$this->config = $config;
+		return $this->getRecentArray();
+	}
+
 	public function setOrder($array = [[1, 'DESC']]) //table data order by column
 	{
 		$config = $this->getGlobalConfig();
