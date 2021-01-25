@@ -2,14 +2,16 @@
 
 namespace App\Exports;
 
-use \App\Sales;
 use App\Components\Filters\SalesFilter;
+use App\SalesDetail;
+use Illuminate\Http\Request;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithEvents;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Events\AfterSheet;
-use Illuminate\Http\Request;
+use \App\Sales;
+use DB;
 
 class SalesExportXls implements FromCollection, WithHeadings, ShouldAutoSize, WithEvents
 {
@@ -26,13 +28,21 @@ class SalesExportXls implements FromCollection, WithHeadings, ShouldAutoSize, Wi
     public function collection()
     {
         $filter = new SalesFilter(new Request(self::$params));
-        $data   = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter)->get();
+        // $data   = Sales::join('users','users.id','sales.user_id')->select('sales.*','users.name as user_name')->filter($filter)->get();
 
-        foreach ($data as $key => $value) {
-            $detail = SalesDetail::whereSalesId($data->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
+        // foreach ($data as $key => $value) {
+        //     $detail = SalesDetail::whereSalesId($value->id)->join('products','products.id','sales_details.product_id')->select('sales_details.*' ,'products.name as product')->get()->pluck('product')->toArray();
 
-            $data[$key]['product'] = count($detail) ? implode(', ', $detail) : '-';
-        }
+        //     $data[$key]['product'] = count($detail) ? implode(', ', $detail) : '-';
+        // }
+
+        $data = SalesDetail::join('sales','sales_details.sales_id','sales.id')
+                        ->join('users','users.id','sales.user_id')
+                        ->join('products','products.id','sales_details.product_id')
+                        ->select('users.name as user_name','sales.date',DB::raw('group_concat(products.name) as product'),'sales.total_payment','sales.total_paid','sales.total_change')
+                        ->filter($filter)
+                        ->groupBy('sales_id')
+                        ->get();
 
         return $data;
     }

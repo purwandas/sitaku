@@ -72,7 +72,7 @@ class UniversalJob implements ShouldQueue
         }
     }
 
-    public function failed(\Exception $exception)
+    public function failed($exception)
     {
         // Send user notification of failure, etc...
         $this->trace->update([
