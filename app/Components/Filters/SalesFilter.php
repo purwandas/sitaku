@@ -40,4 +40,19 @@ class SalesFilter extends QueryFilters
 			});
 	}
 
+	public function total_payment($value)
+	{
+		return $this->builder->where('total_payment', 'like', '%'.$value.'%');
+	}
+
+	public function total_paid($value)
+	{
+		return $this->builder->where('total_paid', 'like', '%'.$value.'%');
+	}
+
+	public function total_change($value)
+	{
+		return $this->builder->where('total_change', 'like', '%'.$value.'%');
+	}
+
 }
