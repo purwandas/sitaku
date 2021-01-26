@@ -46,10 +46,6 @@ class TrendMomentController extends Controller
 
     public function calculation($product, $month)
     {
-        // TEST SELECTED MONTH
-        // $month = 1;
-        // TEST SELECTED PRODUCT
-        // $product = null;
 
         $trendData  = TrendMoment::
             when( @$product, function($q) use ($product){
@@ -107,7 +103,7 @@ class TrendMomentController extends Controller
 
         // ΣY = n.a + b.ΣX
         $n = $idx;
-        
+
         if ( ( ($sigXSquare * $n) - ($sigX * $sigX) ) == 0) {
             return [
                 'message' => 'Cannot calculate data',
@@ -137,7 +133,7 @@ class TrendMomentController extends Controller
             $next[$i]['trend']      = round($seasonIndex * $next[$i]['prediction'], 2);
             $next[$i]['idx']        = $i + $idx;
             $i++;
-        }while($i <= 12);
+        }while($i < 12);
 
         return [
             'sales'       => $dataResult,
