@@ -29,6 +29,11 @@ class SalesFilter extends QueryFilters
 		return is_array($value) ? $this->builder->whereIn('suppliers.id', $value) : $this->builder->where('suppliers.id', $value);
 	}
 
+	public function user_id($value)
+	{
+		return is_array($value) ? $this->builder->whereIn('users.id', $value) : $this->builder->where('users.id', $value);
+	}
+
 	public function product_id($value)
 	{
 		return $this->builder->leftJoin('sales_details','sales_details.sales_id','sales.id')
