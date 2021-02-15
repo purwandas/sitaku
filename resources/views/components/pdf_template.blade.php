@@ -1,7 +1,6 @@
 <body>
     <div class="clearfix">
         <div class="logo">
-            <img src="{{asset('assets/images/logoPdf.png')}}">
         </div>
         <h1>{{config('app.name')}}</h1>
         <div class="clearfix">
