@@ -360,7 +360,7 @@ class FormBuilderHelper
 			if(is_array($v)){
 				$tmp = [];
 				foreach ($v as $key => $val) {
-					$tmp[] = [ $val[0] => $val[1], 'targets' => $key ];
+					$tmp[] = [ $val[0] => $val[1], 'targets' => ($key + 1) ];
 				}
 				$config['setupDatatableBuilder']['columnDefs'] = $tmp;
 				$this->config = $config;

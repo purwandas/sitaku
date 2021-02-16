@@ -54,7 +54,7 @@ $exceptForeign = @$exceptForeign ?? [];
 			$order      = isset($order) ? $order : [];
 			$newRoute   = $route ?? $cRoute;
 			$columnDefs = isset($columnDefs) ? $columnDefs : [];
-			$merged     = array_merge(@$useDatatableAction ? ['action'=>''] : [], $model::rule());
+			$merged     = array_merge(@$useDatatableAction ? ['action'=>'', 'id'=>'ID'] : [], $model::rule());
 			removeArrayByKey($merged, $except);
 
 			$merged = array_merge($merged, $arr);
@@ -73,6 +73,8 @@ $exceptForeign = @$exceptForeign ?? [];
 					$related   = getForeignClass($model, $foreign['column']);
 					$label     = @$related::labelText()[0] ?? ['name'];
 					$columns[] = ['data' => $column.'_'.$label];
+				} elseif ($key == 'id') {
+					$columns[] = ['data' => $key, 'visible' => false];
 				} else {
 					$columns[] = ['data' => $key];
 				}
