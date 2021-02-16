@@ -323,10 +323,10 @@ class SalesController extends Controller
                         $trend->product_id = $product->id;
                         $trend->month_ = $now->month;
                         $trend->year_ = $now->year;
-                        $trend->total_sales = $value['unit_qty'];
+                        $trend->total_sales = getAutoNumeric($value['unit_qty']);
                         $trend->save();
                     }else{
-                        $trend->total_sales = $trend->total_sales + $value['unit_qty'];
+                        $trend->total_sales = $trend->total_sales + getAutoNumeric($value['unit_qty']);
                         $trend->save();
                     }
 
@@ -339,8 +339,8 @@ class SalesController extends Controller
                     // $trend->total_sales = $trend->total_sales + $value['unit_qty'];
 
                     // Ngurangin Stock
-                    if($value['unit_qty'] <= $product->stock){
-                        $product->stock = $product->stock - $value['unit_qty'];
+                    if(getAutoNumeric($value['unit_qty']) <= $product->stock){
+                        $product->stock = $product->stock - getAutoNumeric($value['unit_qty']);
                         $product->save();
                     }else{
                         DB::rollback();
