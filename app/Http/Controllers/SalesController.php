@@ -311,32 +311,23 @@ class SalesController extends Controller
                         'total'      => getAutoNumeric($value['total']),
                     ]);
 
-                    $now = Carbon::now();
+                    $date = Carbon::parse($request['date']);
 
                     $trend = TrendMoment::where('product_id',$product->id)
-                                        ->where('month_',$now->month)
-                                        ->where('year_',$now->year)
+                                        ->where('month_',$date->month)
+                                        ->where('year_',$date->year)
                                         ->first();
 
                     if(!$trend){
                         $trend = new TrendMoment;
-                        $trend->product_id = $product->id;
-                        $trend->month_ = $now->month;
-                        $trend->year_ = $now->year;
+                        $trend->product_id  = $product->id;
+                        $trend->month_      = $date->month;
+                        $trend->year_       = $date->year;
                         $trend->total_sales = getAutoNumeric($value['unit_qty']);
-                        $trend->save();
                     }else{
                         $trend->total_sales = $trend->total_sales + getAutoNumeric($value['unit_qty']);
-                        $trend->save();
                     }
-
-                    // $trend = TrendMoment::firstOrCreate([
-                    //     'product_id' => $value['product'],
-                    //     'month_'     => $now->month,
-                    //     'year_'      => $now->year,
-                    // ]);
-
-                    // $trend->total_sales = $trend->total_sales + $value['unit_qty'];
+                    $trend->save();
 
                     // Ngurangin Stock
                     if(getAutoNumeric($value['unit_qty']) <= $product->stock){
