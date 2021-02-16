@@ -250,6 +250,11 @@ $classRow      = ['class'=>'row'];
 	    @endphp
 
 	    {{-- {{ @$slot }} --}}
+	    <div class="form-group progress progressForm" style="display:none;width: 100%;">
+			<div class="progressBarForm progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
+				<span class="sr-only">0%</span>
+			</div>
+		</div>
 
 	    @if($useModal)
 	    </div>
@@ -287,7 +292,7 @@ $classRow      = ['class'=>'row'];
 
 @push('additional-js')
 <script type="text/javascript">
-
+	var pb = $('.progressForm').html();
 	$('#form{{$class}}').submit(function(event) {
         event.preventDefault();
         $('#submitBtn{{$class}}').prop('disabled',true);
@@ -310,7 +315,22 @@ $classRow      = ['class'=>'row'];
 			cache: 			false,
 			contentType: 	false,
 			processData: 	false,
+			xhr : function() {
+				var xhr = new window.XMLHttpRequest();
+				xhr.upload.addEventListener('progress', function(e){
+					(async function() {
+						if(e.lengthComputable){
+							var percent = await Math.round((e.loaded / e.total) * 100);
+							
+							await $('.progressForm .progressBarForm').attr('aria-valuenow', percent).css('width', percent + '%').text(percent + '%');
+						}
+					})();
+				});
+				return xhr;
+			},
             beforeSend: function( xhr ) {
+            	initProgressBar();
+				$('.progressForm').show();
 			    // xhr.overrideMimeType( "text/plain; charset=x-user-defined" );
 			},
 			success: function (data) {
@@ -354,6 +374,7 @@ $classRow      = ['class'=>'row'];
 		                @endif
 		            }
 		        });
+				$('.progressForm').hide();
             },
             error: function(xhr, textStatus, errorThrown){
                 swal({
@@ -361,12 +382,17 @@ $classRow      = ['class'=>'row'];
                 	text: xhr.responseJSON.msg ?? "Silahkan hubungi admin",
                 	type: "error"
                 });
+				$('.progressForm').hide();
             }
         });
         
         $('#submitBtn{{$class}}').prop('disabled',false);
 
     });
+
+    function initProgressBar() {
+    	$('.progressForm').html(pb);
+    }
 
     @if(!$useModal)
     	function backToIndex() {
